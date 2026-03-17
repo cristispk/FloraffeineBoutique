@@ -208,3 +208,33 @@ To ensure consistency across the platform, the following translations must be us
 - Do not mix English and Romanian in UI.
 - Keep wording clear, friendly, and concise.
 - Maintain consistent phrasing across all modules.
+
+## Boutique Source Documents Override Rule
+
+The following source documents define the Boutique business scope and implementation direction:
+
+- docs/source-of-truth/floraffeine-boutique.docx
+- docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
+
+These documents must be treated as the primary source of truth for:
+- business flows
+- pages
+- modules
+- merchant/admin/public areas
+- backlog direction
+- feature intent
+
+### Explicit Project Override
+
+For this implementation, the project must be treated as a fully standalone Laravel application.
+
+This means:
+
+- nothing is shared with any previous or external project
+- cart must be built from scratch in this project
+- checkout must be built from scratch in this project
+- order flow must be built from scratch in this project
+- payment flow/integration layer must be built inside this project
+- no existing common module, shared checkout, shared cart, shared order system, or shared infrastructure should be assumed
+
+If the Boutique source documents reference any previously shared functionality, that reference must be reinterpreted as functionality to be implemented locally inside this standalone project.

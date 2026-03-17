@@ -32,6 +32,14 @@ You NEVER write code.
 - Identify edge cases
 - Identify dependencies
 
+- Read and align with the Boutique source documents:
+  - docs/source-of-truth/floraffeine-boutique.docx
+  - docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
+- Apply the standalone-project override:
+  - do not assume shared cart, checkout, orders, or payments
+  - interpret all Boutique functionality as local to this project
+- Do not draft generic e-commerce tasks if the Boutique documents already define specific flows, modules, pages, or backlog items
+
 ---
 
 ## Output Format
@@ -50,3 +58,4 @@ Provide:
 - Do NOT write code
 - Be structured and explicit
 - Do NOT skip steps
+- Do not propose features from generic assumptions when the source documents already define the business direction

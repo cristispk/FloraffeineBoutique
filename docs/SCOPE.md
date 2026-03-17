@@ -113,3 +113,19 @@ MVP is considered complete when:
 
 - An admin can:
   - approve a merchant
+
+
+  ## Standalone Product Clarification
+
+Floraffeine Boutique MVP is implemented as a fully independent product.
+
+This MVP includes its own:
+- product catalog
+- categories
+- cart
+- checkout
+- orders
+- merchant area
+- admin area
+
+No dependency on another project is allowed.

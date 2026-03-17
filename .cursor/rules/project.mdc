@@ -108,3 +108,30 @@ When implementing a feature:
 - Internal code (variables, class names, methods) must remain in English
 
 - Documentation and technical content remain in English
+
+## Boutique Source of Truth Rules
+
+For Floraffeine Boutique planning and execution, always use these source documents:
+
+- docs/source-of-truth/floraffeine-boutique.docx
+- docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
+
+They define the intended business flows, pages, modules, and backlog.
+
+### Mandatory Override
+
+This implementation is a fully standalone project.
+
+Never assume that any of the following are shared with another project:
+
+- cart
+- checkout
+- order flow
+- payment flow
+- merchant flow
+- admin flow
+- public catalog infrastructure
+
+If the Boutique documents mention or imply shared/common functionality, reinterpret it as functionality that must be implemented locally inside this standalone Laravel application.
+
+Do not generate tasks or implementation plans based on external/shared platform assumptions.

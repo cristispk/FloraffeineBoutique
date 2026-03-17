@@ -138,3 +138,35 @@ Testing must cover:
 ## Documentation Rule
 
 If a task changes architecture, scope, or development standards, the related documentation must be updated.
+
+After the planner creates the initial task draft, the architect must review and refine it into the final technical task definition before implementation begins.
+
+No implementation starts until the architect validates or refines the task definition.
+
+## Task Authoring Rule
+
+After the planner drafts the task and the architect validates or refines it, the task-writer agent must create or update the final task file inside `/tasks` before implementation begins.
+
+No implementation starts before the task file exists in finalized form.
+
+
+## Boutique Task Interpretation Rule
+
+For all Floraffeine Boutique tasks, the planner, architect, and task-writer must read and align with:
+
+- docs/source-of-truth/floraffeine-boutique.docx
+- docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
+
+However, all Boutique tasks must be interpreted using this mandatory override:
+
+- this project is fully standalone
+- no shared cart, checkout, order flow, or payment logic may be assumed
+- all referenced Boutique functionality must be implemented inside this project unless explicitly excluded in the current task scope
+
+No implementation may start based on assumptions from a previous project.
+
+## Task Authoring Rule
+
+After the planner drafts the task and the architect validates or refines it, the task-writer agent must create or update the final task file inside `/tasks` before implementation begins.
+
+No implementation starts before the task file exists in finalized form.

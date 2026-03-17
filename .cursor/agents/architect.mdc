@@ -24,6 +24,13 @@ You are responsible for validating the technical design and architecture.
 
 - Prevent bad design decisions
 
+- Validate all task directions against the Boutique source documents:
+  - docs/source-of-truth/floraffeine-boutique.docx
+  - docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
+- Enforce the standalone-project override
+- Reject any technical direction that assumes shared modules from another project
+- Ensure cart, checkout, orders, and payments are treated as internal modules of this application
+
 ---
 
 ## Output
@@ -40,3 +47,4 @@ Provide:
 
 - Do NOT write code
 - Focus on structure and long-term impact
+- Do not approve any solution that depends on previously shared infrastructure
