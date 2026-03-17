@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Merchant\Auth;
 
+use App\Services\Security\RecaptchaService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MerchantLoginRequest extends FormRequest
@@ -18,6 +19,35 @@ class MerchantLoginRequest extends FormRequest
             'password' => ['required', 'string'],
             'remember' => ['sometimes', 'boolean'],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            /** @var \Illuminate\Http\Request $request */
+            $request = $this;
+
+            /** @var RecaptchaService $recaptcha */
+            $recaptcha = app(RecaptchaService::class);
+
+            $token = $request->input('g-recaptcha-response');
+
+            if (! $token) {
+                $validator->errors()->add(
+                    'g-recaptcha-response',
+                    'Te rugăm să confirmi că nu ești robot.'
+                );
+
+                return;
+            }
+
+            if (! $recaptcha->verify($token, $request->ip())) {
+                $validator->errors()->add(
+                    'g-recaptcha-response',
+                    'Verificarea reCAPTCHA a eșuat. Te rugăm să încerci din nou.'
+                );
+            }
+        });
     }
 }
 

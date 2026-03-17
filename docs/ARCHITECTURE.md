@@ -119,6 +119,26 @@ Core entities will include:
 
 ---
 
+## Authentication Architecture
+
+Authentication is implemented using:
+
+- a single `users` table with a `role` column (`user`, `merchant`, `admin`)
+- a single `web` guard (session-based)
+- Laravel's built-in password reset broker (`users`)
+
+Role-based access is enforced by:
+
+- Laravel `auth` middleware for authentication
+- a generic `role` middleware alias for role validation
+- separate route groups for:
+  - public auth (`/register`, `/login`, `/logout`, password reset)
+  - merchant auth (prefixed with `/merchant`)
+  - admin auth (prefixed with `/admin`)
+
+Business logic for registration, role-aware login, and logout lives in `app/Services/Auth/AuthService.php`.
+
+
 ## Services Layer
 
 Business logic must be placed in service classes:
@@ -159,3 +179,32 @@ Examples:
 - Keep code readable and modular
 - Always follow the defined architecture
 - Do NOT assume any dependency on another project
+
+## Language & UI Text Rules
+
+All user-facing text in the application must be written in Romanian.
+
+### Standard Terminology
+
+To ensure consistency across the platform, the following translations must be used:
+
+- Login → Autentificare
+- Register → Creează cont
+- Logout → Deconectare
+- Email → Email
+- Password → Parolă
+- Confirm Password → Confirmă parola
+- Forgot Password → Ai uitat parola?
+- Reset Password → Resetează parola
+- Dashboard → Panou de control
+
+### Area-specific terminology
+
+- Merchant → Comerciant
+- Admin → Administrator
+
+### Notes
+
+- Do not mix English and Romanian in UI.
+- Keep wording clear, friendly, and concise.
+- Maintain consistent phrasing across all modules.

@@ -92,3 +92,19 @@ When implementing a feature:
 - Do not skip parts
 - Do not assume missing logic
 - Always follow the defined architecture
+
+## Language Rules
+
+- All user-facing text must be written in Romanian
+- This includes:
+  - Blade views (public, merchant, admin)
+  - form labels
+  - buttons
+  - validation messages displayed in UI
+  - headings and descriptions
+
+- Do NOT use English for visible UI text
+
+- Internal code (variables, class names, methods) must remain in English
+
+- Documentation and technical content remain in English

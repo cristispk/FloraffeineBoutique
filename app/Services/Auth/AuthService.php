@@ -5,7 +5,6 @@ namespace App\Services\Auth;
 use App\Models\User;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
@@ -66,7 +65,7 @@ class AuthService
         return User::create([
             'name' => $data['name'] ?? '',
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'password' => $data['password'],
             'role' => $role,
         ]);
     }

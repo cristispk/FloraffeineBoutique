@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
-@section('title', 'Reset your password')
-@section('subtitle', 'Choose a new password to secure your account.')
+@section('title', 'Resetează-ți parola')
+@section('subtitle', 'Alege o parolă nouă pentru a-ți proteja contul.')
 
 @section('content')
     <form method="POST" action="{{ route('password.update') }}">
@@ -10,26 +10,26 @@
         <input type="hidden" name="token" value="{{ $token }}">
 
         <div class="field">
-            <label for="email">Email</label>
+            <label for="email">Adresă de email</label>
             <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus>
         </div>
 
         <div class="field">
-            <label for="password">New password</label>
+            <label for="password">Parolă nouă</label>
             <input id="password" name="password" type="password" required>
         </div>
 
         <div class="field">
-            <label for="password_confirmation">Confirm new password</label>
+            <label for="password_confirmation">Confirmă parola nouă</label>
             <input id="password_confirmation" name="password_confirmation" type="password" required>
         </div>
 
         <button class="btn" type="submit">
-            Update password
+            Actualizează parola
         </button>
 
         <div class="link-row">
-            <a href="{{ route('login') }}">Back to login</a>
+            <a href="{{ route('login') }}">Înapoi la autentificare</a>
         </div>
     </form>
 @endsection
