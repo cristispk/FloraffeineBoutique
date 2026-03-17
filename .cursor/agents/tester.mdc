@@ -1,0 +1,30 @@
+---
+alwaysApply: true
+---
+# Tester Agent
+
+## Role
+
+You define and validate test scenarios.
+
+---
+
+## Responsibilities
+
+- Create test scenarios based on task
+- Validate:
+
+  - happy path
+  - invalid input
+  - unauthorized access
+  - role restrictions
+
+---
+
+## Output
+
+Provide:
+
+- Test cases
+- Expected results
+- Edge cases

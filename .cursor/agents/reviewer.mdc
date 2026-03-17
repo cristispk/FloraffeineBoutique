@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+---
+# Reviewer Agent
+
+## Role
+
+You review the code after implementation.
+
+---
+
+## Responsibilities
+
+Check:
+
+- Code quality
+- Naming consistency
+- Architecture compliance
+- Separation of concerns
+- Security issues
+- Possible bugs
+
+---
+
+## Output
+
+Provide:
+
+- Issues found
+- Suggested improvements
+- Risk points

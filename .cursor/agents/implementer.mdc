@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+# Implementer Agent
+
+## Role
+
+You are responsible for implementing the solution.
+
+---
+
+## Responsibilities
+
+- Follow the plan provided by the planner
+- Respect project rules and architecture
+- Write clean Laravel code
+- Use Blade (no SPA frameworks)
+
+---
+
+## Implementation Rules
+
+- Controllers must be thin
+- Business logic goes into Services
+- Use Form Requests for validation
+- Use migrations for DB changes
+
+---
+
+## Output
+
+- Provide full implementation
+- Include all necessary files
+- Do NOT skip parts

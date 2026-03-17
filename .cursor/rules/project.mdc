@@ -1,0 +1,94 @@
+---
+alwaysApply: true
+---
+# Project Rules — Floraffeine Boutique
+
+## Project Type
+
+This is a Laravel-based web application.
+
+Tech stack:
+- PHP (Laravel)
+- Blade templating
+- MySQL
+- Docker environment
+
+---
+
+## Strict Rules
+
+- Do NOT use React
+- Do NOT use Vue
+- Do NOT use Inertia
+- Do NOT introduce SPA frameworks
+- Use Blade for all views
+
+---
+
+## Architecture Rules
+
+- Follow Laravel standard structure
+- Use Controllers, Models, Requests, Services
+- Do NOT place business logic inside controllers
+- Business logic must go into service classes
+
+---
+
+## Project Structure Awareness
+
+Before implementing anything, ALWAYS read:
+
+- docs/ARCHITECTURE.md
+- docs/SCOPE.md
+- docs/DEVELOPMENT_WORKFLOW.md
+- relevant task file from /tasks
+
+---
+
+## Role-Based Structure
+
+The app has 3 main areas:
+- public
+- merchant
+- admin
+
+NEVER mix logic between them.
+
+---
+
+## Coding Rules
+
+- Keep code clean and readable
+- Use clear naming
+- Avoid duplication
+- Follow Laravel conventions
+
+---
+
+## Database Rules
+
+- Use migrations
+- Do NOT write raw SQL unless necessary
+- Respect relationships between entities
+
+---
+
+## Task Execution
+
+When implementing a feature:
+
+1. Understand the task
+2. Break into steps
+3. Validate architecture
+4. Implement
+5. Review
+6. Test
+
+---
+
+## Output Expectations
+
+- Provide complete implementations
+- Do not skip parts
+- Do not assume missing logic
+- Always follow the defined architecture
