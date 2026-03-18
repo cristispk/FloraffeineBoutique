@@ -1,13 +1,15 @@
 ---
 alwaysApply: true
 ---
+
 # Project Rules — Floraffeine Boutique
 
 ## Project Type
 
-This is a Laravel-based web application.
+This is a standalone Laravel web application.
 
 Tech stack:
+
 - PHP (Laravel)
 - Blade templating
 - MySQL
@@ -15,7 +17,19 @@ Tech stack:
 
 ---
 
-## Strict Rules
+## Core Project Principle
+
+The Floraffeine Boutique must be treated as a complete product from the beginning.
+
+- The full business flow must always be considered
+- Implementation is incremental
+- Architecture must support all modules from the start
+
+Agents must NOT think in phases.
+
+---
+
+## Strict Technology Rules
 
 - Do NOT use React
 - Do NOT use Vue
@@ -29,8 +43,26 @@ Tech stack:
 
 - Follow Laravel standard structure
 - Use Controllers, Models, Requests, Services
-- Do NOT place business logic inside controllers
-- Business logic must go into service classes
+- Controllers must remain thin
+- Business logic must be placed in service/action classes
+- Do NOT mix responsibilities between modules
+- Do NOT design temporary solutions that require later rewrites
+
+---
+
+## Full Product Awareness Rule
+
+All agents must:
+
+- understand the complete Boutique product
+- implement features as part of a full system
+- ensure current tasks do not block future modules:
+  - subscriptions
+  - promotions
+  - payouts
+  - events
+
+Even if not implemented yet, these must be considered.
 
 ---
 
@@ -40,98 +72,202 @@ Before implementing anything, ALWAYS read:
 
 - docs/ARCHITECTURE.md
 - docs/SCOPE.md
+- docs/ROADMAP.md
 - docs/DEVELOPMENT_WORKFLOW.md
-- relevant task file from /tasks
+- docs/DESIGN_CONTINUITY.md
+- docs/UI_COMPONENTS_REFERENCE.md
+- relevant task file from `/tasks`
 
 ---
 
-## Role-Based Structure
+## Application Areas
 
-The app has 3 main areas:
+The application is strictly divided into:
+
 - public
 - merchant
 - admin
 
-NEVER mix logic between them.
+Rules:
+
+- NEVER mix logic between these areas
+- NEVER reuse controllers across areas improperly
+- ALWAYS respect access boundaries
+
+---
+
+## Status-Based Architecture Rule
+
+Access is controlled by BOTH:
+
+- user role (user / merchant / admin)
+- business status (merchant status, product status, subscription status)
+
+Agents must NEVER assume that authentication alone grants access.
+
+Examples:
+
+- merchant may be logged in but blocked by status
+- product may exist but not be publicly visible
 
 ---
 
 ## Coding Rules
 
-- Keep code clean and readable
-- Use clear naming
+- Keep code clean, readable, and modular
+- Use clear and consistent naming
 - Avoid duplication
-- Follow Laravel conventions
+- Follow Laravel conventions strictly
+- Prefer clarity over cleverness
 
 ---
 
 ## Database Rules
 
-- Use migrations
-- Do NOT write raw SQL unless necessary
-- Respect relationships between entities
+- Use migrations for all schema changes
+- Respect entity relationships
+- Use indexes where appropriate
+- Do NOT use raw SQL unless strictly necessary
+- Never trust user input in queries
 
 ---
 
-## Task Execution
+## Design Continuity Rule
+
+Boutique must visually align with the parent Floraffeine website.
+
+Agents must:
+
+- follow docs/DESIGN_CONTINUITY.md
+- follow docs/UI_COMPONENTS_REFERENCE.md
+
+Rules:
+
+- do NOT invent new UI styles
+- do NOT copy-paste raw HTML blindly
+- build clean Blade components
+- maintain consistent spacing, typography, and layout
+
+---
+
+## Language Rules
+
+- All user-facing text MUST be written in Romanian
+
+This includes:
+
+- Blade views
+- buttons
+- labels
+- validation messages
+- headings
+- UI descriptions
+
+Rules:
+
+- Do NOT mix Romanian and English in UI
+- Keep wording clear, friendly, and consistent
+
+Internal code must remain in English.
+
+---
+
+## Boutique Source of Truth Rules
+
+All planning and implementation must align with:
+
+- docs/source-of-truth/floraffeine-boutique.docx
+- docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
+
+These define:
+
+- business flows
+- page structure
+- module intent
+- system behavior
+
+---
+
+## Mandatory Standalone Override
+
+This project is fully standalone.
+
+NEVER assume shared functionality for:
+
+- cart
+- checkout
+- orders
+- payments
+- merchant systems
+- admin systems
+- public catalog
+
+If source documents imply shared behavior:
+
+→ reinterpret as functionality to be implemented locally.
+
+---
+
+## Task Ordering Rule
+
+Tasks must follow the logical order defined in:
+
+- docs/ROADMAP.md
+
+Rules:
+
+- do NOT skip tasks
+- do NOT reorder tasks
+- do NOT jump ahead to advanced features prematurely
+
+---
+
+## Task Execution Rule
 
 When implementing a feature:
 
-1. Understand the task
-2. Break into steps
-3. Validate architecture
-4. Implement
-5. Review
-6. Test
+1. Understand the task completely
+2. Align with full product architecture
+3. Validate dependencies
+4. Implement cleanly
+5. Respect design continuity
+6. Ensure extensibility
+7. Review and test properly
+
+---
+
+## Forbidden Behavior
+
+The following are strictly forbidden:
+
+- skipping merchant lifecycle steps
+- bypassing approval flows
+- exposing features before required status
+- mixing UI styles
+- introducing hidden dependencies
+- assuming missing features are “out of scope”
+- implementing shortcuts that require later rewrites
 
 ---
 
 ## Output Expectations
 
-- Provide complete implementations
-- Do not skip parts
-- Do not assume missing logic
-- Always follow the defined architecture
+All outputs must:
 
-## Language Rules
+- be complete
+- be consistent with architecture
+- respect business flow
+- respect design rules
+- avoid partial implementations
 
-- All user-facing text must be written in Romanian
-- This includes:
-  - Blade views (public, merchant, admin)
-  - form labels
-  - buttons
-  - validation messages displayed in UI
-  - headings and descriptions
+---
 
-- Do NOT use English for visible UI text
+## Final Rule
 
-- Internal code (variables, class names, methods) must remain in English
+If something is unclear:
 
-- Documentation and technical content remain in English
-
-## Boutique Source of Truth Rules
-
-For Floraffeine Boutique planning and execution, always use these source documents:
-
-- docs/source-of-truth/floraffeine-boutique.docx
-- docs/source-of-truth/floraffeine-boutique-tasks-plan.docx
-
-They define the intended business flows, pages, modules, and backlog.
-
-### Mandatory Override
-
-This implementation is a fully standalone project.
-
-Never assume that any of the following are shared with another project:
-
-- cart
-- checkout
-- order flow
-- payment flow
-- merchant flow
-- admin flow
-- public catalog infrastructure
-
-If the Boutique documents mention or imply shared/common functionality, reinterpret it as functionality that must be implemented locally inside this standalone Laravel application.
-
-Do not generate tasks or implementation plans based on external/shared platform assumptions.
+- follow source documents
+- follow project documentation
+- follow design continuity
+- follow task order
+- do NOT improvise
