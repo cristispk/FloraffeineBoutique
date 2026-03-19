@@ -269,3 +269,6 @@ If something is unclear:
 - follow reviewer/tester verdicts
 - follow roadmap dependencies
 - do NOT improvise
+
+## Release Rule
+Do not prepare release closure for a task that still has unresolved must-fix issues from review or testing, including visual-quality must-fix issues.

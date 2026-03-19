@@ -260,6 +260,7 @@ All outputs must:
 - respect design rules
 - avoid partial implementations
 
+
 ---
 
 ## Final Rule
@@ -271,3 +272,71 @@ If something is unclear:
 - follow design continuity
 - follow task order
 - do NOT improvise
+
+---
+
+## Design Source of Truth
+For any UI-related task, the design source-of-truth is mandatory and must be treated as authoritative.
+
+If a design source-of-truth exists in:
+docs/design-source-of-truth/
+
+agents must:
+- extract and use the exact visual tokens from the source
+- avoid approximating colors, spacing, proportions, or typography
+- prefer exact reuse over reinterpretation
+
+"Close enough" is not acceptable for UI tasks.
+
+## UI Quality Enforcement
+For UI tasks:
+- visual fidelity is required, not just structural consistency
+- exact color palette must come from the design source-of-truth when available
+- proportions (logo, cards, inputs, buttons, spacing) must be explicitly defined
+- no one-off inline styles are allowed in Blade views
+- reusable Blade components are required for repeated UI patterns
+
+## Workflow Persistence
+Agent outputs must be persisted to files for handoff:
+- planner -> tasks/planning/
+- architect -> tasks/architecture/
+- task-writer -> tasks/
+- reviewer -> tasks/reviews/
+- tester -> tasks/tests/
+- doc-writer -> tasks/done/
+- release-manager -> tasks/releases/
+
+Agents must not rely on chat memory for cross-step handoff.
+
+## Fail Condition For UI Tasks
+A UI task must be considered failed if:
+- it does not visually align with the source-of-truth
+- color palette is approximated instead of extracted
+- spacing/proportions are visibly unbalanced
+- review/testing only validates structure but not rendered visual quality
+
+## Browser-Verified UI Rule
+
+For every UI task, implementation is NOT complete until the agent verifies the rendered result in a browser-like environment.
+
+Mandatory checks:
+- CSS bundle is actually loaded on every page in scope
+- key layout selectors are present
+- screenshots are captured for all pages in scope
+- visible rendering matches the source-of-truth
+
+A UI task must fail if:
+- pages render unstyled or partially unstyled
+- CSS depends on a build artifact that is missing and no fallback exists
+- screenshots show broken proportions, overflow, missing layout, or missing branding
+
+## Visual Completion Rule
+
+A UI task is not considered complete until:
+- reviewer passes
+- tester passes
+- visual-auditor passes
+
+All three are required.
+
+If visual-auditor fails, the task must be reworked even if reviewer/tester passed.

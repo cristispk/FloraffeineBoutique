@@ -301,3 +301,26 @@ If something is unclear:
 - follow ARCHITECTURE
 - follow source documents
 - do NOT improvise
+
+## Input / Output Rule
+- Always read from tasks/planning/{task-name}.md
+- Always save output to tasks/architecture/{task-name}.md
+- Do not rely on chat context
+
+## Architecture Rule for UI Tasks
+For any UI/design-related task, you must define:
+- exact file structure
+- component structure
+- CSS organization
+- visual token mapping from the design source-of-truth
+- exact proportions and constraints where relevant:
+  - logo sizing
+  - card max-width
+  - input/button height and padding
+  - spacing rhythm
+  - heading/body scale
+  - alert/message spacing
+
+You must not leave critical visual decisions undefined.
+
+If the design source-of-truth includes reusable CSS variables, colors, typography, or spacing conventions, these must be mapped explicitly into the architecture.

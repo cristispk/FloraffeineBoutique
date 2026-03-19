@@ -1,0 +1,264 @@
+/* Floraffeine runtime-safe stylesheet
+ *
+ * This file exists so the app is styled even when Vite build artifacts
+ * (public/build/manifest.json) are absent in the current environment.
+ *
+ * It mirrors `resources/css/app.css` but removes Tailwind/Vite-only at-rules
+ * (`@import 'tailwindcss'`, `@source`, `@theme`) that browsers cannot parse.
+ */
+
+/* Floraffeine parent design source-of-truth (strict selector/value mapping) */
+
+:root {
+    --ff-sans: "Lora", Georgia, "Times New Roman", serif;
+    --ff-serif: "Work Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    --ff-couture: "Lora", Georgia, "Times New Roman", serif;
+
+    --color-beige: #f5efe7;
+    --color-beige-2: #efe7de;
+    --color-espresso: #2f231f;
+    --color-brown: #4a3b35;
+    --color-ink: #111111;
+    --color-accent: #7f5a3a;
+
+    --glass-bg: rgba(245, 239, 231, 0.75);
+    --glass-border: rgba(47, 35, 31, 0.12);
+    --shadow-soft: 0 6px 24px rgba(0, 0, 0, 0.07);
+    --shadow-elev: 0 10px 40px rgba(0, 0, 0, 0.12);
+    --cta-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+
+    --nav-height: 96px;
+    --nav-height-scrolled: 84px;
+    --dropdown-radius: 18px;
+}
+
+body {
+    --color-text: #fff;
+    --color-bg: #000;
+    --color-link: #fff;
+    --color-link-hover: #fff;
+    --color-frame: #ff5ba4;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    font-family: var(--ff-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+html,
+body {
+    background: #ffffff;
+    color: var(--color-brown);
+    font-family: var(--ff-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.brand-serif {
+    font-family: var(--ff-couture);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-espresso);
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.nav-glass {
+    height: var(--nav-height);
+    transition: height 220ms ease, box-shadow 220ms ease, background-color 220ms ease, backdrop-filter 220ms ease;
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.nav-glass.scrolled {
+    height: var(--nav-height-scrolled);
+    background: #ffffff;
+    box-shadow: var(--shadow-soft);
+}
+
+.nav-inner {
+    max-width: 1320px;
+    margin-inline: auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+}
+
+@media screen and (min-width: 1440px) {
+    .nav-inner {
+        min-width: 1320px;
+        max-width: 80vw;
+    }
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.brand img {
+    height: 52px;
+    width: auto;
+}
+
+.brand .wordmark {
+    font-family: var(--ff-serif);
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--color-espresso);
+}
+
+/* Parent auth-form fidelity: .ai-form system */
+
+.ai-form-section {
+    padding: 24px 0 80px;
+}
+
+.ai-form {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.ai-form .form-card {
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    padding: 24px;
+}
+
+.ai-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.ai-form .field--full {
+    grid-column: 1 / -1;
+}
+
+.ai-form .label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-espresso);
+    margin-bottom: 8px;
+    font-family: var(--ff-serif);
+}
+
+.ai-form .input {
+    width: 100%;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: #fff;
+    color: var(--color-espresso);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.ai-form .input:focus,
+.ai-form .input:focus-visible {
+    outline: none;
+    border-color: rgba(47, 35, 31, 0.55);
+    box-shadow: 0 0 0 2px rgba(47, 35, 31, 0.08);
+}
+
+.ai-form .textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+@media (max-width: 768px) {
+    .ai-form .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ai-form .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.ai-form .form-card a {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+.ai-form .form-card a:hover {
+    text-decoration: underline;
+}
+
+/* Parent button fidelity: .btn system (bootstrap utilities required) */
+
+.btn,
+a.btn {
+    font-family: var(--ff-serif);
+    letter-spacing: 0.015em;
+    font-weight: 600;
+}
+
+.btn-dark,
+.btn-theme {
+    color: #fff;
+    background: rgba(47, 35, 31, 0.92);
+    border-color: rgba(47, 35, 31, 0.98);
+    box-shadow: 0 2px 0 rgba(255, 255, 255, 0.06) inset;
+    transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.btn-dark:hover,
+.btn-theme:hover {
+    color: #fff;
+    background: rgba(58, 44, 39, 0.98);
+    transform: translateY(-2px);
+    box-shadow: var(--cta-shadow);
+}
+
+.btn-dark:focus-visible,
+.btn-theme:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55), 0 0 0 6px rgba(47, 35, 31, 0.9);
+}
+
+.btn-outline-dark,
+.btn-theme--outline {
+    color: var(--color-espresso);
+    background: transparent;
+    border-color: rgba(47, 35, 31, 0.7);
+    transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.btn-outline-dark:hover,
+.btn-theme--outline:hover {
+    color: var(--color-espresso);
+    background: #f7f2eb;
+    transform: translateY(-2px);
+    box-shadow: var(--cta-shadow);
+}
+
+.btn-outline-dark:focus-visible,
+.btn-theme--outline:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55), 0 0 0 6px rgba(47, 35, 31, 0.9);
+}
+

@@ -291,3 +291,31 @@ The correct workflow is:
 2. architect validates and corrects the task direction
 3. task-writer validates again and creates or updates the final task file
 4. implementation starts only after the task file exists and is correct
+
+## Input / Output Rule
+- Always read from tasks/architecture/{task-name}.md
+- Always write the final task to tasks/{task-name}.md
+- The result must be directly executable by implementer
+
+## Task Writing Rule for UI Tasks
+For UI-related tasks, the final task must include:
+- explicit source-of-truth path
+- explicit requirement to use exact color palette/tokens
+- explicit visual acceptance criteria
+- explicit fail conditions when UI only approximates the design
+- exact pages/files in scope
+- exact non-goals
+
+Do not write vague requirements like:
+- "make it nice"
+- "improve UI"
+- "align the design"
+
+Instead write measurable instructions and acceptance criteria.
+
+## UI Task Output Requirements
+Every UI task must include:
+- required pages to screenshot
+- required rendered-state verification
+- explicit check that CSS/assets are loaded
+- explicit fail condition if screenshots show broken or unstyled pages

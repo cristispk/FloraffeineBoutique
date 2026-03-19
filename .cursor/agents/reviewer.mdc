@@ -373,3 +373,44 @@ If something is unclear:
 - follow roadmap
 - follow source documents
 - do NOT improvise
+
+## Review Rule for UI Tasks
+For UI-related tasks, review must include two separate sections:
+
+### 1. Structural Review
+- architecture respected
+- reusable components used
+- no inline styles
+- no unnecessary route/controller/business-logic changes
+
+### 2. Visual Quality Review
+- visual fidelity to source-of-truth
+- exact or faithful color usage
+- balanced logo sizing
+- proper spacing rhythm
+- strong hierarchy for headings/forms/messages
+- premium visual consistency across pages
+
+A UI task must not pass review if it is technically clean but visually weak.
+
+## Output Rule
+Write review output to:
+tasks/reviews/{task-name}.md
+
+Separate:
+- must-fix issues
+- optional improvements
+
+## Mandatory Screenshot Review
+For UI tasks, you must review:
+- the code
+- the rendered screenshots
+- whether CSS actually loaded
+- whether the source-of-truth is visible in the final result
+
+You must fail the task if screenshots show:
+- unstyled pages
+- oversized logo/image
+- broken form formatting
+- missing header/footer/branding structure
+- mismatch between intended layout and actual browser rendering

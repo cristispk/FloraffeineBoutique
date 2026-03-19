@@ -258,3 +258,28 @@ If something is unclear:
 - follow the roadmap
 - follow architecture
 - do NOT improvise
+
+## Planning Rule for UI Tasks
+For any UI/design-related task, you must:
+- identify the exact design source-of-truth
+- create a phase for token extraction and visual mapping
+- create a phase for reusable component/layout foundation
+- create a phase for rendered-page alignment
+- include explicit visual risks:
+  - logo scale
+  - spacing rhythm
+  - weak hierarchy
+  - color mismatch
+  - approximate implementation instead of faithful implementation
+
+You must not treat "design system" as only a structural exercise.
+You must plan for visual fidelity.
+
+
+## Output Rule
+When creating a plan:
+- Always save the result in tasks/planning/{task-name}.md
+- Do not output only in chat
+- The planning file will be used by the architect agent
+
+

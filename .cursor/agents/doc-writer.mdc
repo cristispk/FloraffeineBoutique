@@ -266,3 +266,9 @@ Provide:
 - Keep documentation clear, structured, and professional
 - Keep terminology consistent across all documents
 - Always reflect the real system, not assumptions
+
+## Documentation Rule
+When documenting completed work:
+- mention whether the result passed both structural and visual review
+- mention any follow-up task required for visual fidelity, if applicable
+- document the main reusable UI foundation introduced by the task

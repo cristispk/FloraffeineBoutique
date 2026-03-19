@@ -326,3 +326,36 @@ Your implementation must be:
 - UI-consistent
 - security-aware
 - extensible for the complete Boutique product
+
+## Input Rule
+- Always use tasks/{task-name}.md as the single source of truth
+- Do not improvise beyond the task scope
+
+## Implementation Rule for UI Tasks
+For any UI task:
+- do not invent a palette if one exists in the design source-of-truth
+- do not approximate spacing or proportions without documented architectural guidance
+- use the exact task as source of truth
+- use reusable Blade components and centralized styling
+- do not introduce page-specific hacks to simulate alignment
+
+If any visual requirement is unclear, preserve fidelity to the design source-of-truth instead of improvising.
+
+## Mandatory UI Verification
+For UI tasks, after coding you must:
+- ensure frontend assets are actually available
+- verify that @vite or the asset loading strategy works in the current environment
+- open the pages in scope
+- capture screenshots
+- check for:
+  - missing CSS
+  - oversized images/logos
+  - broken spacing
+  - raw/unformatted forms
+  - missing source-of-truth structure
+
+You must save screenshots to:
+tasks/artifacts/screenshots/{task-name}/
+
+You must save a short verification note to:
+tasks/artifacts/screenshots/{task-name}/verification.md

@@ -4,15 +4,15 @@
 @section('subtitle', 'Ești autentificat ca și client.')
 
 @section('content')
-    <p style="font-size:0.9rem;margin-bottom:1rem;">
+    <p class="brand-serif">
         Acesta este un panou provizoriu pentru zona publică a utilizatorului.
     </p>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf
-        <button class="btn btn-secondary" type="submit">
+        <x-ui.button-secondary type="submit">
             Deconectare
-        </button>
+        </x-ui.button-secondary>
     </form>
 @endsection
 
