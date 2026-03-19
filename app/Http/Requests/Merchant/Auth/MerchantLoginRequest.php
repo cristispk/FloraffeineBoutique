@@ -27,6 +27,11 @@ class MerchantLoginRequest extends FormRequest
             /** @var \Illuminate\Http\Request $request */
             $request = $this;
 
+            // When reCAPTCHA is disabled, do not add any g-recaptcha-response validation errors.
+            if (! config('recaptcha.enabled')) {
+                return;
+            }
+
             /** @var RecaptchaService $recaptcha */
             $recaptcha = app(RecaptchaService::class);
 
