@@ -51,6 +51,6 @@
 
 @section('form_links')
     <span>Ești deja creator?</span>
-    <a href="{{ route('merchant.login') }}">Autentificare comerciant</a>
+    <a href="{{ route('login') }}">Autentificare</a>
 @endsection
 

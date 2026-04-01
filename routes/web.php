@@ -50,8 +50,8 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
         Route::get('/register', [MerchantRegisterController::class, 'showRegistrationForm'])->name('register');
         Route::post('/register', [MerchantRegisterController::class, 'register']);
 
-        Route::get('/login', [MerchantLoginController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [MerchantLoginController::class, 'login']);
+        Route::get('/login', fn () => redirect()->route('login'))->name('login');
+        Route::post('/login', fn () => redirect()->route('login'));
 
         Route::get('/password/forgot', [MerchantForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
         Route::post('/password/email', [MerchantForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

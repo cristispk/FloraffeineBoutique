@@ -17,7 +17,7 @@
         </button>
 
         <div class="link-row">
-            <a href="{{ route('merchant.login') }}">Înapoi la autentificare comerciant</a>
+            <a href="{{ route('login') }}">Înapoi la autentificare</a>
         </div>
     </form>
 @endsection

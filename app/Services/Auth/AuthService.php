@@ -51,6 +51,34 @@ class AuthService
         return true;
     }
 
+    /**
+     * Attempt to authenticate a non-admin user (user or merchant).
+     *
+     * Admin/wrong-role attempts are treated as invalid credentials.
+     */
+    public function attemptLoginForNonAdmin(array $credentials): ?User
+    {
+        $guard = $this->auth->guard('web');
+
+        if (! $guard->attempt([
+            'email' => $credentials['email'] ?? null,
+            'password' => $credentials['password'] ?? null,
+        ], $credentials['remember'] ?? false)) {
+            return null;
+        }
+
+        /** @var User|null $user */
+        $user = $guard->user();
+
+        if (! $user || ! in_array($user->role, [User::ROLE_USER, User::ROLE_MERCHANT], true)) {
+            $guard->logout();
+
+            return null;
+        }
+
+        return $user;
+    }
+
     public function logout(): void
     {
         $guard = $this->auth->guard('web');

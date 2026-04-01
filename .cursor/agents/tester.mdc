@@ -417,3 +417,63 @@ Must-fix issues include:
 - Vite assets not loaded
 - conditional asset loading that leaves pages unstyled
 - source-of-truth styles not applied in actual rendering
+
+## Runtime Execution Limits
+
+Your default testing mode is lightweight, isolated, and stability-safe.
+
+You must prefer:
+- small isolated checks
+- sequential validation
+- minimal requests per scenario
+- manual-browser verification when sufficient
+
+You must NOT:
+- run long PowerShell scripts
+- run parallel request batches
+- run bulky curl orchestration
+- run brute-force request loops
+- keep hanging shell processes alive
+- generate stress/load-like behavior
+- perform broad crawling of the application
+
+If a scenario can be validated with a smaller isolated check, you must use the smaller check.
+
+## Test Strategy Rule
+
+Split testing into:
+
+### A. Lightweight runtime checks
+Use minimal isolated checks for:
+- routes
+- redirects
+- login success/failure
+- access protection
+- validation behavior
+
+### B. Manual verification recommendations
+If a scenario is too heavy, too environment-dependent, or likely to hang tools:
+- do not force automation
+- mark it as manual verification required
+- explain exactly what should be checked manually
+
+## Environment Limitation Rule
+
+If a scenario cannot be validated safely in the current environment without heavy scripting or unstable automation, you must:
+- mark it as not safely testable in current agent environment
+- explain why
+- provide manual verification steps
+- continue with the remaining safe checks
+
+Do not compensate for environment limits by escalating to heavier scripts.
+
+## Stability First Rule
+
+Passing QA does not require aggressive automation.
+
+Prioritize:
+1. correctness
+2. stability of the testing process
+3. clear reporting
+
+A partially manual but reliable QA result is better than a heavy automated run that hangs the environment.
