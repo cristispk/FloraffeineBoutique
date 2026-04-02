@@ -4,11 +4,12 @@
 
 Defines all security, validation, and protection rules for the Boutique platform.
 
-This document ensures:
-- data integrity
-- access control
-- protection against misuse or attacks
-- enforcement of business rules
+This document enforces:
+
+- strict backend validation
+- access control based on role AND lifecycle
+- data integrity across all flows
+- protection against misuse, tampering, and attacks
 
 ---
 
@@ -16,41 +17,88 @@ This document ensures:
 
 Never trust the frontend.
 
-ALL validation and authorization must be enforced on the backend.
+ALL validation, authorization, and critical logic MUST be enforced on the backend.
+
+Frontend is informational only.
+
+Backend is authoritative.
 
 ---
 
-# 1. Input Validation
+## Architecture Responsibility
+
+Security MUST be enforced across:
+
+- Form Requests → input validation
+- Services → business validation
+- Middleware → access control
+- Models → structure only (NO business logic)
+
+Controllers MUST remain thin.
+
+---
+
+# 1. Input Validation (MANDATORY)
 
 ## Rules
 
-- all input must be validated via Form Requests
-- no validation in controllers
-- no direct trust in request data
+- ALL input MUST be validated via Form Requests
+- NO validation in controllers
+- NO direct trust in request data
+- NO partial validation
 
 ---
 
-## Examples
+## Validation Scope
+
+Must include:
 
 - required fields
 - correct formats (email, phone)
 - numeric validation (price, quantity)
 - enum validation (status values)
+- existence checks (exists in DB)
+- relationship validation (product belongs to merchant)
+
+---
+
+## Forbidden
+
+- trusting frontend validation
+- skipping validation for "internal" routes
+- accepting unknown fields silently
 
 ---
 
 # 2. Authentication Security
 
-- use Laravel built-in authentication
-- passwords must be hashed
-- use CSRF protection on all forms
+System MUST:
+
+- use Laravel authentication system
+- hash all passwords
+- enforce CSRF protection
 - protect all sensitive routes with `auth`
+
+---
+
+## Session Rules
+
+- sessions must be secure
+- logout must invalidate session
+- no sensitive data stored in session
 
 ---
 
 # 3. Authorization (CRITICAL)
 
-## Role-Based Access
+Authorization is BOTH:
+
+- role-based
+- state-based (lifecycle)
+
+---
+
+## Roles
 
 - user
 - merchant
@@ -58,28 +106,57 @@ ALL validation and authorization must be enforced on the backend.
 
 ---
 
-## State-Based Access
+## Lifecycle Conditions
 
-Access must ALSO depend on:
+Access MUST also depend on:
 
-- merchant status
-- product status
-- subscription status
+- merchant.status
+- product.status
+- subscription.status
 
 ---
 
-## Example
+## Example Rules
 
 Merchant CANNOT:
 
 - access dashboard if not active
 - create products without active subscription
+- publish products if not approved
+
+User CANNOT:
+
+- access other user orders
+
+Admin CAN:
+
+- override flows (within controlled rules)
+
+---
+
+## Enforcement
+
+Authorization MUST be enforced via:
+
+- policies
+- middleware
+- service checks
+
+Never only in UI.
 
 ---
 
 # 4. Ownership Rules
 
-Users must access ONLY their own data.
+Users MUST access ONLY their own data.
+
+---
+
+## Enforcement Rules
+
+- always validate ownership via user_id
+- never trust route parameters alone
+- never expose foreign resources
 
 ---
 
@@ -91,60 +168,85 @@ Users must access ONLY their own data.
 
 ---
 
-## Protection
+# 5. Route Protection
 
-- always check `user_id`
-- never trust route parameters alone
+All routes MUST be protected.
 
 ---
 
-# 5. Route Protection
+## Required Middleware
 
-All routes must be protected with:
-
-- auth middleware
-- role middleware
-- custom lifecycle middleware
+- auth
+- role-based middleware
+- lifecycle middleware
 
 ---
 
 ## Examples
 
 - merchant.active
-- merchant.subscription
+- merchant.subscription.active
 - admin.only
-
----
-
-# 6. Lifecycle Protection
-
-Prevent bypass of lifecycle rules.
-
----
-
-## Examples
-
-- accessing dashboard before activation
-- creating product without approval
-- purchasing inactive product
 
 ---
 
 ## Rule
 
-If lifecycle is bypassed:
-→ system is broken
+No sensitive route must be accessible without proper middleware.
+
+---
+
+# 6. Lifecycle Protection
+
+System MUST enforce lifecycle rules strictly.
+
+---
+
+## Protected Actions
+
+- dashboard access
+- product creation
+- product publishing
+- checkout
+- event participation
+- promotions
+
+---
+
+## Rule
+
+If lifecycle rules are bypassed:
+
+→ system integrity is broken
 
 ---
 
 # 7. Data Integrity
 
-## Rules
+System MUST ensure:
 
-- recalculate totals server-side
-- never trust frontend prices
-- enforce foreign key constraints
-- use transactions where needed
+- totals are recalculated server-side
+- frontend values are ignored
+- foreign keys are enforced
+- critical operations use transactions
+
+---
+
+## Example (Atomic Operation)
+
+~~~php
+DB::transaction(function () {
+    // critical operations
+});
+~~~
+
+---
+
+## Forbidden
+
+- trusting client totals
+- partial writes without transaction
+- orphan records
 
 ---
 
@@ -152,60 +254,110 @@ If lifecycle is bypassed:
 
 ## URL Manipulation
 
+System MUST:
+
 - validate all IDs
-- ensure ownership
+- validate ownership
+- validate existence
 
 ---
 
 ## Form Manipulation
 
+System MUST:
+
 - validate all fields
 - reject unexpected input
+- sanitize input where needed
+
+---
+
+## Forbidden
+
+- trusting hidden inputs
+- trusting client-submitted IDs blindly
 
 ---
 
 # 9. Duplicate & Replay Protection
 
-## Orders
+System MUST prevent:
 
-- prevent duplicate submissions
-- use tokens or idempotency
+- duplicate order creation
+- repeated form submissions
+- replay attacks
+
+---
+
+## Methods
+
+- idempotency tokens
+- unique constraints
+- server-side duplicate checks
+
+---
+
+## Rule
+
+Same action MUST NOT produce multiple unintended results.
 
 ---
 
 # 10. Admin Security
 
-## Rules
-
-- admin actions must be controlled
-- sensitive operations must be validated
+Admin actions MUST be controlled.
 
 ---
 
-## Optional
+## Rules
 
-- log admin actions
-- audit trail
+- sensitive operations must be validated
+- dangerous actions must be explicit
+- optional audit logging recommended
+
+---
+
+## Examples
+
+- deleting data
+- modifying lifecycle states
+- overriding validations
 
 ---
 
 # 11. Error Handling
 
-## Rules
+System MUST:
 
-- no sensitive data in error messages
+- never expose sensitive data
 - log errors internally
 - show user-friendly messages
 
 ---
 
+## Forbidden
+
+- exposing stack traces
+- exposing SQL queries
+- exposing internal logic
+
+---
+
 # 12. Logging
 
-Use logs for:
+System SHOULD log:
 
-- security events
 - failed access attempts
 - suspicious behavior
+- critical actions
+- security-related events
+
+---
+
+## Logging MUST NOT:
+
+- expose sensitive user data
+- store plain passwords or tokens
 
 ---
 
@@ -213,17 +365,51 @@ Use logs for:
 
 ## Rules
 
-- escape all output
-- no raw HTML unless safe
-- no DB calls in Blade
+- escape all output by default
+- use raw output ONLY when explicitly safe
+- no database queries in Blade
+- no business logic in Blade
 
 ---
 
-# 14. Edge Cases
+## Forbidden
+
+- rendering unescaped user input
+- mixing logic and presentation
+
+---
+
+# 14. API Security (IMPORTANT)
+
+If APIs are used:
+
+System MUST:
+
+- validate all requests
+- authenticate properly (token/session)
+- enforce rate limiting (recommended)
+- validate payload structure strictly
+
+---
+
+## Forbidden
+
+- accepting arbitrary JSON without validation
+- exposing internal endpoints without auth
+
+---
+
+# 15. Edge Cases
 
 ### Merchant Suspended
 
-→ block all actions
+→ block ALL actions
+
+---
+
+### Subscription Expired
+
+→ block dashboard, product creation, promotions
 
 ---
 
@@ -239,9 +425,30 @@ Use logs for:
 
 ---
 
+### Invalid Input
+
+→ return validation errors
+
+---
+
+# 16. Synchronization Rule
+
+Security rules MUST be consistent across:
+
+- controllers
+- services
+- middleware
+- database constraints
+- UI behavior
+
+Any mismatch is a critical vulnerability.
+
+---
+
 ## Final Rule
 
 Security is NOT optional.
 
 If validation or access control fails:
-→ entire system is compromised
+
+→ entire system is compromised.

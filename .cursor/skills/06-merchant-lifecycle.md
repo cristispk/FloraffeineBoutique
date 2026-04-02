@@ -5,12 +5,14 @@
 This document defines the complete lifecycle of a merchant (creator) in the Boutique platform.
 
 It controls:
+
 - access to features
 - routing permissions
 - UI visibility
 - business logic transitions
 
 This lifecycle is mandatory and must be enforced at all levels:
+
 - backend (services, policies)
 - middleware
 - UI
@@ -25,130 +27,51 @@ A merchant may be authenticated but must NOT access features unless their busine
 
 ---
 
-## Lifecycle States
+# 1. Lifecycle States
 
-### 1. Draft
+### Draft
 
 Initial state after registration.
 
-#### Description
-- merchant account exists
-- onboarding not started or incomplete
+---
 
-#### Access
-- can access onboarding
-- cannot access dashboard
-- cannot create products
+### Onboarding
 
-#### Routes Allowed
-- /merchant/onboarding
+Merchant is completing onboarding steps.
 
 ---
 
-### 2. Onboarding
+### Pending Review
 
-Merchant is actively completing onboarding steps.
-
-#### Description
-- partial data saved
-- multi-step flow
-
-#### Access
-- can continue onboarding
-- cannot access dashboard
-- cannot access products
-
-#### Rules
-- incomplete data is allowed
-- progress must be persisted
+Merchant submitted for admin approval.
 
 ---
 
-### 3. Pending Review
+### Accepted Pending Subscription
 
-Merchant completed onboarding and submitted for approval.
-
-#### Description
-- waiting for admin decision
-
-#### Access
-- cannot modify onboarding data (optional rule)
-- cannot access products or dashboard
-
-#### UI Behavior
-- show status page
-- display "În curs de aprobare"
+Approved but subscription not active.
 
 ---
 
-### 4. Accepted Pending Subscription
-
-Merchant approved by admin but has not activated Creator Plan.
-
-#### Description
-- approved but not operational
-
-#### Access
-- can access limited dashboard
-- cannot create products
-- must activate subscription
-
-#### Required Action
-- activate Creator Plan
-
-#### Routes Allowed
-- /merchant/activate
-
----
-
-### 5. Active
+### Active
 
 Fully operational merchant.
 
-#### Description
-- subscription active
-- full access granted
-
-#### Access
-- dashboard
-- products
-- orders
-- payouts
-- promotions
-- events
-
 ---
 
-### 6. Rejected
+### Rejected
 
 Merchant rejected by admin.
 
-#### Description
-- cannot operate
-
-#### Access
-- restricted
-- may allow reapply (optional)
-
-#### UI Behavior
-- show rejection reason
-
 ---
 
-### 7. Suspended
+### Suspended
 
 Merchant temporarily disabled.
 
-#### Description
-- due to admin action or payment issue
-
-#### Access
-- no operational features
-- may access status page
-
 ---
 
-## State Transitions
+# 2. State Transitions
 
 Allowed transitions:
 
@@ -156,44 +79,149 @@ Allowed transitions:
 - onboarding → pending_review
 - pending_review → accepted_pending_subscription
 - accepted_pending_subscription → active
-- any → suspended
 - pending_review → rejected
+- any → suspended
 
 ---
 
-## Login Redirect Rules
+## Transition Rules
+
+- ALL transitions MUST be validated
+- transitions MUST be executed only via Services
+- direct status updates in database are FORBIDDEN
+
+---
+
+## Single Source of Truth
+
+- lifecycle states must be defined as constants or enums
+- no hardcoded strings across codebase
+
+---
+
+# 3. Access Control per State
+
+Each state defines strict access rules.
+
+---
+
+## Draft
+
+- access onboarding only
+- no dashboard
+- no products
+
+---
+
+## Onboarding
+
+- continue onboarding
+- no dashboard access
+- no products
+
+---
+
+## Pending Review
+
+- no access to dashboard
+- no product management
+- view status only
+
+---
+
+## Accepted Pending Subscription
+
+- limited dashboard
+- cannot create products
+- must activate subscription
+
+---
+
+## Active
+
+- full access:
+  - dashboard
+  - products
+  - orders
+  - payouts
+  - promotions
+  - events
+
+---
+
+## Rejected
+
+- restricted access
+- show rejection reason
+
+---
+
+## Suspended
+
+- no operational access
+- status page only
+
+---
+
+# 4. Login Redirect Rules
 
 After login:
 
-- draft / onboarding → redirect to onboarding
-- pending_review → redirect to status page
-- accepted_pending_subscription → redirect to activation page
-- active → redirect to dashboard
-- rejected → redirect to status page
-- suspended → redirect to status page
+- draft / onboarding → onboarding
+- pending_review → status page
+- accepted_pending_subscription → activation page
+- active → dashboard
+- rejected → status page
+- suspended → status page
 
 ---
 
-## Middleware Enforcement
+# 5. Middleware Enforcement
 
-Examples:
+Middleware MUST:
 
-- merchant.onboarding
-- merchant.pending_review
-- merchant.active
-- merchant.subscription
-
-Each route must be protected based on lifecycle state.
+- check lifecycle state
+- block unauthorized access
+- never modify state
 
 ---
 
-## UI Rules
+## Important Rule
 
-- merchant must always see current status
+Middleware ≠ Business Logic
+
+- middleware only checks
+- services enforce transitions
+
+---
+
+# 6. Service Enforcement (CRITICAL)
+
+Services MUST:
+
+- validate all lifecycle transitions
+- enforce allowed transitions only
+- prevent invalid state changes
+
+---
+
+## Forbidden
+
+- updating status directly in controller
+- updating status via model
+- bypassing lifecycle rules
+
+---
+
+# 7. UI Rules
+
+- UI must always reflect current state
 - no hidden states
-- clear CTA for next step
+- clear next action (CTA)
 
-Examples:
+---
+
+## Examples
 
 - onboarding → "Continuă completarea"
 - pending_review → "În curs de aprobare"
@@ -201,27 +229,44 @@ Examples:
 
 ---
 
-## Edge Cases
+# 8. Synchronization Rule
+
+Lifecycle MUST be consistent across:
+
+- database
+- services
+- middleware
+- UI
+
+Any mismatch is a critical bug.
+
+---
+
+# 9. Edge Cases
 
 ### Incomplete Onboarding Return
 
-- merchant leaves and returns later
 - must resume from last step
+
+---
 
 ### Subscription Expired
 
 - active → suspended
 - restrict all features
 
-### Admin Rejection After Edits
+---
 
-- product or merchant may return to restricted state
+### Admin Rejection
+
+- merchant returns to restricted state
 
 ---
 
-## Final Rule
+# Final Rule
 
 No feature access without correct lifecycle state.
 
 If lifecycle is bypassed:
-→ system is considered broken.
+
+→ the system is broken.

@@ -17,14 +17,14 @@ Floraffeine Boutique is a complete product from the beginning.
 
 This means:
 
-- the system must always be thought as a whole
-- implementation is incremental, but architecture is complete
+- the system must always be thought of as a whole
+- implementation is incremental, but architecture must remain complete
 - no feature should be treated as isolated
 
 ### Rules
 
 - do NOT build temporary solutions
-- do NOT create logic that will need to be rewritten later
+- do NOT create logic that will need later rewrite
 - always consider future modules:
   - subscriptions
   - payouts
@@ -32,24 +32,31 @@ This means:
   - events
   - showcase logic
 
+Compatibility with future modules must be preserved, even when current scope is smaller.
+
 ---
 
 ## 2. Roadmap-Driven Development
 
-The project is implemented strictly according to:
+The project is implemented according to:
 
 - docs/ROADMAP.md
 
 ### Rules
 
 - do NOT skip tasks
-- do NOT reorder tasks
+- do NOT reorder tasks arbitrarily
 - do NOT jump ahead
 - do NOT implement future features early
 
+If roadmap order and actual task history diverge:
+
+- normalize documentation and workflow before continuing major work
+- do NOT silently continue in contradiction
+
 If unsure:
 
-→ always follow the next step in the roadmap
+→ follow the next valid step in the roadmap and project workflow
 
 ---
 
@@ -69,9 +76,9 @@ Floraffeine Boutique is a fully independent application.
   - merchant flows
   - admin flows
 
-If the source documents suggest shared functionality:
+If source documents suggest shared functionality:
 
-→ reinterpret it as local functionality
+→ reinterpret it as local functionality inside this project
 
 ---
 
@@ -93,6 +100,8 @@ It follows a specific business model defined in:
   - approval flows
   - activation rules
 
+Business flow correctness is more important than generic implementation habits.
+
 ---
 
 ## 5. Clear Separation of Areas
@@ -110,6 +119,8 @@ The system is divided into:
 - do NOT expose admin logic to merchants
 - always use proper middleware and access control
 
+Area boundaries must remain explicit and predictable.
+
 ---
 
 ## 6. Service-Oriented Architecture
@@ -121,7 +132,9 @@ Laravel structure must be respected.
 - controllers must be thin
 - business logic must be in Services or Actions
 - validation must be in Form Requests
-- models must represent data, not business logic
+- models must represent data, not hidden business flow
+
+The system must prefer clear structure over convenience.
 
 ---
 
@@ -131,7 +144,7 @@ Shortcuts create technical debt.
 
 ### Rules
 
-- do NOT implement "quick fixes"
+- do NOT implement quick fixes as permanent solutions
 - do NOT bypass proper structure
 - do NOT duplicate logic instead of structuring it properly
 
@@ -152,6 +165,8 @@ Boutique must visually and behaviorally align with the parent Floraffeine platfo
 - reuse patterns and components
 - do NOT create disconnected UI
 
+For UI tasks, visual continuity is mandatory, not optional.
+
 ---
 
 ## 9. Romanian UI Rule
@@ -170,6 +185,8 @@ Examples:
 - Register → Creează cont
 - Dashboard → Panou de control
 
+Internal code remains in English.
+
 ---
 
 ## 10. Security by Default
@@ -182,21 +199,29 @@ Security is mandatory, not optional.
 - use CSRF protection
 - enforce authentication and roles
 - enforce ownership checks
-- escape all Blade output
+- escape Blade output
 - never trust client input
+
+Correctness without security is not acceptable.
 
 ---
 
 ## 11. No Partial Implementation
 
-A feature is either complete or not implemented.
+A feature is either complete or not complete.
 
 ### Rules
 
 - do NOT leave TODOs
-- do NOT deliver partial flows
+- do NOT deliver partial flows as finished
 - do NOT skip edge cases
 - do NOT fake completeness
+
+A task is not complete until:
+- implementation is finished
+- required validation is passed
+- documentation reflects the real result
+- closure is performed correctly
 
 ---
 
@@ -211,6 +236,8 @@ Speed is useless without consistency.
 - avoid randomness in code or UI
 - align with existing patterns
 
+Correct and consistent execution is always preferred over rushed output.
+
 ---
 
 ## 13. Task-Driven Execution
@@ -223,6 +250,8 @@ All work must be based on tasks.
 - do NOT extend scope without validation
 - do NOT improvise outside task scope
 
+Task execution must follow the defined workflow and validation gates.
+
 ---
 
 ## 14. Documentation Must Reflect Reality
@@ -232,8 +261,32 @@ Documentation must always be accurate.
 ### Rules
 
 - do NOT leave outdated docs
-- do NOT document assumptions
+- do NOT document assumptions as facts
 - always update docs when decisions change
+- reflect actual implementation and actual validation outcomes
+
+Documentation must describe the real system, not the intended one.
+
+---
+
+## 15. No Improvisation Rule
+
+When something is unclear:
+
+- follow source documents
+- follow architecture
+- follow workflow
+- follow validated task scope
+
+### Rules
+
+- do NOT guess critical behavior
+- do NOT invent missing flow
+- do NOT replace missing clarity with assumptions
+
+If something is unclear:
+
+→ stop and resolve ambiguity before continuing
 
 ---
 
@@ -245,6 +298,7 @@ If a decision conflicts with:
 - architecture
 - business flow
 - standalone rule
+- validated task workflow
 
 → the implementation is WRONG
 

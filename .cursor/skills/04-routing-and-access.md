@@ -5,13 +5,16 @@
 Define strict routing, middleware, and access control rules.
 
 All routes MUST respect separation between:
+
 - public
 - merchant
 - admin
 
+Routing is a critical security layer.
+
 ---
 
-## 1. Route Files Structure
+# 1. Route Files Structure
 
 Routes are split by area:
 
@@ -21,7 +24,7 @@ Routes are split by area:
 
 ---
 
-## 2. Route Service Provider
+# 2. Route Service Provider
 
 Each route file must be loaded with proper middleware:
 
@@ -31,7 +34,43 @@ Each route file must be loaded with proper middleware:
 
 ---
 
-## 3. Public Routes
+# 3. Route Definition Rules
+
+- routes must ONLY define endpoints
+- NO business logic in routes
+- NO inline closures with logic (except trivial)
+
+All logic must flow:
+
+Route → Controller → Service
+
+---
+
+# 4. Route Groups (Mandatory)
+
+All routes MUST be grouped using:
+
+- prefix
+- name
+- middleware
+
+---
+
+## Example
+
+~~~php
+Route::prefix('merchant')
+    ->name('merchant.')
+    ->middleware(['web', 'auth', 'role:merchant'])
+    ->group(function () {
+        Route::get('/products', [ProductController::class, 'index'])
+            ->name('products.index');
+    });
+~~~
+
+---
+
+# 5. Public Routes
 
 Accessible without authentication.
 
@@ -42,33 +81,33 @@ Examples:
 - product details
 - login / register
 
-Rules:
+---
+
+## Rules
 
 - NO merchant data exposure
 - NO admin actions
 - read-only access only
+- apply rate limiting where needed
 
 ---
 
-## 4. Merchant Routes
+# 6. Merchant Routes
 
 Accessible ONLY by authenticated merchants.
 
-Middleware:
+---
+
+## Middleware
 
 - auth
 - role:merchant
-
----
-
-### Additional Middleware
-
 - merchant.onboarding
 - merchant.active
 
 ---
 
-### Rules
+## Rules
 
 - merchants can only access their own data
 - no cross-merchant access
@@ -76,26 +115,28 @@ Middleware:
 
 ---
 
-## 5. Admin Routes
+# 7. Admin Routes
 
 Accessible ONLY by admins.
 
-Middleware:
+---
+
+## Middleware
 
 - auth
 - role:admin
 
 ---
 
-### Rules
+## Rules
 
 - full access to system data
-- actions must be protected
 - sensitive actions must be logged
+- destructive actions must be protected
 
 ---
 
-## 6. Middleware Responsibilities
+# 8. Middleware Responsibilities
 
 Middleware must handle:
 
@@ -106,7 +147,7 @@ Middleware must handle:
 
 ---
 
-## 7. Merchant Status Middleware
+# 9. Merchant Status Middleware
 
 Examples:
 
@@ -117,15 +158,7 @@ Examples:
 
 ---
 
-## 8. Access Control Rules
-
-- users cannot access merchant routes
-- merchants cannot access admin routes
-- admin cannot use merchant routes as merchant
-
----
-
-## 9. Ownership Rules
+# 10. Ownership Rules
 
 - merchants can only access their own:
   - products
@@ -134,7 +167,23 @@ Examples:
 
 ---
 
-## 10. Route Naming Convention
+## Route Model Binding Rule
+
+- always use route model binding
+- always validate ownership after binding
+- never trust ID alone
+
+---
+
+# 11. Access Control Rules
+
+- users cannot access merchant routes
+- merchants cannot access admin routes
+- admin cannot use merchant routes as merchant
+
+---
+
+# 12. Route Naming Convention
 
 Use prefixes:
 
@@ -142,23 +191,35 @@ Use prefixes:
 - merchant.*
 - admin.*
 
-Example:
+---
+
+## Examples
 
 - merchant.products.index
 - admin.merchants.review
 
 ---
 
-## 11. Forbidden Practices
+# 13. Security Rules
+
+- apply rate limiting where needed
+- protect sensitive routes
+- never expose internal endpoints
+- validate all access via middleware
+
+---
+
+# 14. Forbidden Practices
 
 - mixing public and merchant routes
 - missing middleware
 - exposing sensitive endpoints
 - direct access to protected URLs
+- business logic in routes
 
 ---
 
-## Final Principle
+# Final Principle
 
 Routing defines system security.
 

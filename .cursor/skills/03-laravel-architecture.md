@@ -16,6 +16,8 @@ Laravel must be used as a structured, service-oriented framework.
 
 NOT as a controller-heavy or model-heavy system.
 
+Architecture must enforce clarity, separation of concerns, and business flow integrity.
+
 ---
 
 # 1. Layered Architecture
@@ -23,9 +25,10 @@ NOT as a controller-heavy or model-heavy system.
 The application is divided into:
 
 - Controllers (entry point)
-- Form Requests (validation)
-- Services (business logic)
-- Models (data)
+- Form Requests (validation layer)
+- Services (business logic orchestration)
+- Actions (optional, reusable logic units)
+- Models (data layer)
 - Views (presentation)
 
 ---
@@ -33,6 +36,14 @@ The application is divided into:
 ## Flow
 
 Request → FormRequest → Controller → Service → Model → Response
+
+---
+
+## Architecture Rules
+
+- Each layer has a single responsibility
+- No layer may take responsibilities from another
+- No shortcuts between layers
 
 ---
 
@@ -52,6 +63,7 @@ Controllers must:
 - NO complex conditionals
 - NO data processing
 - NO direct DB queries (except trivial reads if justified)
+- NO validation logic
 
 ---
 
@@ -59,7 +71,7 @@ Controllers must:
 
 BAD:
 
-```php
+~~~php
 public function store(Request $request)
 {
     $user = Auth::user();
@@ -70,18 +82,18 @@ public function store(Request $request)
 
     DB::table('products')->insert([...]);
 }
-```
+~~~
 
 GOOD:
 
-```php
+~~~php
 public function store(StoreProductRequest $request, ProductService $service)
 {
     $service->createProduct($request->validated());
 
     return redirect()->route('merchant.products.index');
 }
-```
+~~~
 
 ---
 
@@ -118,21 +130,37 @@ All business logic goes into Services.
 - NO business logic in controllers
 - NO business logic in models
 - NO duplicated logic across services
+- NO shortcuts or bypassing lifecycle rules
+- do NOT use static methods for business logic
+- all dependencies must be injected (no manual instantiation)
 
 ---
 
 ## Responsibilities
 
-- workflows
+- workflows (orchestration layer)
 - calculations
 - lifecycle transitions
-- orchestration
+- orchestration between models and actions
+
+---
+
+## Business Flow Rule
+
+Services MUST enforce:
+
+- merchant lifecycle
+- product lifecycle
+- order lifecycle
+- approval flows
+
+No service may allow bypassing these rules.
 
 ---
 
 ## Example
 
-```php
+~~~php
 class ProductService
 {
     public function createProduct(array $data): Product
@@ -140,11 +168,33 @@ class ProductService
         return Product::create($data);
     }
 }
-```
+~~~
 
 ---
 
-# 5. Models (Data Layer Only)
+# 5. Actions (Optional but Recommended)
+
+Actions are small, reusable units of logic.
+
+---
+
+## When to use Actions
+
+- repeated logic across services
+- isolated operations (e.g. calculations, transformations)
+- improving readability of services
+
+---
+
+## Rules
+
+- actions must be small and focused
+- no orchestration logic (belongs to services)
+- reusable and testable
+
+---
+
+# 6. Models (Data Layer Only)
 
 Models represent database structure.
 
@@ -172,9 +222,82 @@ Models represent database structure.
 - workflows
 - lifecycle logic
 - complex calculations
+- hidden side-effects
+
+---
+
+# 7. Query Logic
+
+Query logic must NOT be placed in controllers.
+
+---
+
+## Allowed locations
+
+- Services (simple queries)
+- Model scopes (reusable filters)
+- Query classes (for complex queries)
+
+---
+
+## Rules
+
+- avoid duplicated queries
+- keep queries reusable and readable
+- no raw queries in controllers
+- heavy queries must be extracted to dedicated query classes
+
+---
+
+# 8. Error Handling & Return Types
+
+Services must be predictable.
+
+---
+
+## Rules
+
+- return clear types (Model, DTO, bool)
+- throw exceptions for invalid states
+- do NOT return mixed or inconsistent structures
+- do NOT silently ignore errors
+
+---
+
+# 9. Side Effects Rule
+
+Business side-effects must be explicit.
+
+---
+
+## Rules
+
+- no hidden logic in models
+- no silent state changes
+- no implicit lifecycle transitions
+
+All important logic must be visible in Services.
+
+---
+
+# 10. Task-Driven Architecture
+
+All implementation must follow tasks.
+
+---
+
+## Rules
+
+- do NOT implement without a task file
+- do NOT extend scope without validation
+- do NOT anticipate future logic
 
 ---
 
 # Final Principle
 
 Clean architecture is NOT optional.
+
+Structure > Convenience  
+Clarity > Speed  
+Predictability > Flexibility

@@ -64,170 +64,130 @@ All agents must:
 - NOT think in phases
 - NOT treat features as isolated modules
 
-Even if a task implements only a part of the system, it must:
+---
 
-- fit into the full product architecture
-- not block future modules (subscriptions, promotions, events)
+## Team Roles (Normalized)
+
+### Planner
+- selects next task from roadmap
+- defines implementation plan
+- identifies dependencies
 
 ---
 
-## Team Roles
+### Architect
+- validates architecture
+- ensures extensibility
+- enforces module boundaries
 
-### 1. Planner
+---
+
+### Task Writer
+- creates final task in `/tasks`
+- ensures clarity and completeness
+
+---
+
+### Reviewer (PRE-IMPLEMENTATION)
 
 Responsible for:
 
-- identifying the next task based on `docs/ROADMAP.md`
-- understanding full business flow
-- breaking the task into clear implementation steps
-- identifying dependencies and risks
+- validating task correctness BEFORE implementation
+- validating architecture alignment
+- ensuring completeness and clarity
 
 Must NOT:
-
-- invent new flows
-- skip task order
-- think in phases
+- act as tester
+- validate runtime behavior
 
 ---
 
-### 2. Architect
+### Implementer
 
 Responsible for:
 
-- validating the task against full product architecture
-- validating database structure and relationships
-- enforcing module boundaries
-- ensuring extensibility for future modules
-
-Must reject:
-
-- incorrect task order
-- incomplete flow alignment
-- architectural shortcuts
-
----
-
-### 3. Task Writer
-
-Responsible for:
-
-- creating the final task file in `/tasks`
-- structuring the task clearly and completely
-- ensuring alignment with planner + architect output
-
-Rules:
-
-- must NOT create nested task folders
-- must NOT move tasks to `/tasks-done`
-- must NOT modify completed tasks
-
----
-
-### 4. Implementer
-
-Responsible for:
-
-- writing clean, modular code
-- following task requirements strictly
-- respecting all project documentation and skills
-
-Must:
-
-- use Laravel best practices
-- use Blade properly
-- build reusable components
+- implementing task exactly as defined
+- writing clean Laravel code
+- respecting architecture and design
 
 Must NOT:
-
-- extend scope beyond the task
-- introduce architectural changes
-- ignore design continuity
+- change scope
+- redesign architecture
 
 ---
 
-### 5. Reviewer
+### Tester (POST-IMPLEMENTATION)
 
 Responsible for:
 
-- validating code quality
-- validating architecture compliance
-- validating business flow correctness
-- validating security and ownership rules
-- validating design consistency
-
-May:
-
-- apply small and medium fixes
-
-Must reject:
-
-- broken flow logic
-- security issues
-- inconsistent UI
+- validating runtime behavior
+- testing:
+  - acceptance criteria
+  - flows
+  - edge cases
+  - access rules
 
 ---
 
-### 6. Tester
+### Visual Auditor (UI TASKS ONLY)
 
 Responsible for:
 
-- validating acceptance criteria
-- testing real user flows
-- validating edge cases
-- detecting regressions
+- validating visual fidelity
+- ensuring alignment with design source-of-truth
 
-Must test:
-
-- merchant lifecycle
-- product lifecycle
-- access restrictions
-- checkout flow (when applicable)
+Required ONLY for UI tasks.
 
 ---
 
-### 7. Doc Writer
+### Doc Writer
 
 Responsible for:
 
-- updating documentation when needed
-- documenting important decisions
-- keeping docs aligned with implementation
+- writing final completion document in `tasks/done/`
+- summarizing implementation and behavior
 
-Must NOT:
-
-- rewrite unrelated documentation
-- introduce inconsistencies
+Does NOT:
+- modify code
+- modify architecture
 
 ---
 
-### 8. Release Manager
+### Release Manager
 
 Responsible for:
 
-- validating task completion
-- moving tasks from `/tasks` to `/tasks-done`
+- validating final completion
+- writing release document in `tasks/releases/`
+- removing original task from `/tasks`
+- performing git closure
 
-Rules:
+Git closure includes:
+- pull latest changes
+- commit
+- push
 
-- move ONLY fully completed tasks
-- do NOT modify task content
-- do NOT commit unless explicitly requested
+Must NOT proceed if:
+- review not passed
+- testing not passed
+- UI task not passed visual-auditor
+- repo state is unsafe
 
 ---
 
-## Standard Task Flow
+## Standard Task Flow (Corrected)
 
 Every task must follow this exact flow:
 
-1. Planner selects next task from `docs/ROADMAP.md`
-2. Planner defines implementation plan
-3. Architect validates or refines the plan
-4. Task Writer creates final task file in `/tasks`
+1. Planner defines task
+2. Architect validates task
+3. Task Writer creates task in `/tasks`
+4. Reviewer validates task BEFORE implementation
 5. Implementer writes code
-6. Reviewer validates implementation
-7. Tester validates functionality
-8. Doc Writer updates documentation if needed
-9. Release Manager moves task to `/tasks-done`
+6. Tester validates behavior
+7. Visual Auditor validates UI (if applicable)
+8. Doc Writer creates `tasks/done/...`
+9. Release Manager finalizes closure
 
 ---
 
@@ -250,7 +210,6 @@ Before coding, always read:
 - Do not skip planning or validation
 - Do not place business logic in controllers
 - Do not mix public, merchant, and admin logic
-- Do not break modular structure
 - Always respect Laravel architecture
 
 ---
@@ -267,24 +226,16 @@ Typical implementation may include:
 - migrations
 - blade views
 - middleware
-- test scenarios
-
-Each task must evaluate what is required.
 
 ---
 
 ## Review Checklist
 
-Before completion, verify:
+Before implementation:
 
-- architecture respected
-- business flow correct
-- naming consistent
-- validation present
-- authorization enforced
-- no security issues
-- no regressions introduced
-- UI consistent with design reference
+- task clarity validated
+- architecture validated
+- flow completeness ensured
 
 ---
 
@@ -297,7 +248,6 @@ Testing must include:
 - unauthorized access
 - status-based restrictions
 - redirects and flows
-- database changes
 - edge cases
 
 ---
@@ -307,8 +257,9 @@ Testing must include:
 No implementation may start until:
 
 - planner defines the task
-- architect validates or refines it
-- task-writer creates the final task file in `/tasks`
+- architect validates it
+- task-writer creates final version
+- reviewer approves it
 
 ---
 
@@ -319,22 +270,10 @@ A task is complete only when:
 - implementation is finished
 - review is passed
 - testing is passed
-- documentation is updated if needed
-
----
-
-## Task Closure
-
-Task closure is handled by the Release Manager.
-
-Refer to:
-- docs/skills/14-git-and-task-closure.md
-
----
-
-Then:
-
-- release-manager moves the task to `/tasks-done`
+- visual audit is passed (for UI)
+- completion document exists in `tasks/done/`
+- release document exists in `tasks/releases/`
+- task is removed from `/tasks`
 
 ---
 
@@ -342,8 +281,7 @@ Then:
 
 If something is unclear:
 
-- follow the source documents
+- follow source documents
 - follow project documentation
 - follow design reference
 - do NOT improvise
-

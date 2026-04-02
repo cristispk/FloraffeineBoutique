@@ -4,11 +4,12 @@
 
 Defines testing strategy, QA coverage, and required fixtures.
 
-Ensures:
-- full flow validation
-- lifecycle enforcement
+This document enforces:
+
+- complete flow validation
+- strict lifecycle enforcement
 - regression safety
-- consistent QA process
+- consistent and repeatable QA process
 
 ---
 
@@ -16,46 +17,92 @@ Ensures:
 
 Do NOT test only happy paths.
 
-System must be validated against:
+System MUST be validated against:
+
 - invalid data
-- wrong states
+- invalid states
 - edge cases
 - lifecycle violations
+- concurrency issues
+
+---
+
+## Architecture Responsibility
+
+Testing MUST cover:
+
+- Services → business logic
+- Controllers → request handling
+- Middleware → access control
+- Database → integrity & constraints
+- UI → user experience consistency
 
 ---
 
 # 1. Test Types
 
-### Unit Tests
+## Unit Tests
+
+Scope:
+
 - services
 - calculations
+- lifecycle transitions
 - business rules
 
 ---
 
-### Feature Tests
-- full flows
-- endpoints
-- validation behavior
+## Rules
+
+- isolate logic
+- no external dependencies
+- deterministic results
 
 ---
 
-### Manual QA
+## Feature Tests
+
+Scope:
+
+- endpoints
+- validation behavior
+- full flows (checkout, merchant, product)
+
+---
+
+## Rules
+
+- test real HTTP flows
+- validate responses
+- validate database state
+
+---
+
+## Manual QA
+
+Scope:
+
 - UI behavior
-- flow consistency
-- real user experience
+- UX consistency
+- real user flows
+
+---
+
+## Rule
+
+Manual QA is REQUIRED before task completion.
 
 ---
 
 # 2. Required Fixtures (CRITICAL)
 
-System must include predefined data for testing.
+System MUST include predefined data sets.
+
+Fixtures MUST cover ALL lifecycle states.
 
 ---
 
 ## Merchant Fixtures
-
-Create merchants in ALL states:
 
 - draft
 - onboarding
@@ -68,8 +115,6 @@ Create merchants in ALL states:
 ---
 
 ## Product Fixtures
-
-Create products in ALL states:
 
 - draft
 - pending_approval
@@ -112,26 +157,55 @@ Create products in ALL states:
 
 ---
 
-# 3. Happy Path Scenarios
+## Rule
 
-Must test:
+Fixtures MUST be:
 
-### Merchant Flow
+- reproducible
+- isolated
+- resettable between tests
+
+---
+
+# 3. Happy Path Testing
+
+System MUST validate all core flows.
+
+---
+
+## Merchant Flow
+
 - register → onboarding → approval → activation
 
-### Product Flow
+---
+
+## Product Flow
+
 - create → submit → approve → visible
 
-### Checkout Flow
+---
+
+## Checkout Flow
+
 - add to cart → checkout → order created
 
 ---
 
-# 4. Negative Testing
+## Rule
 
-Must test:
+Happy path MUST always work reliably.
 
-- missing fields
+---
+
+# 4. Negative Testing (MANDATORY)
+
+System MUST test invalid scenarios.
+
+---
+
+## Examples
+
+- missing required fields
 - invalid formats
 - invalid IDs
 - unauthorized access
@@ -139,90 +213,243 @@ Must test:
 
 ---
 
-# 5. Edge Cases
+## Rule
+
+Invalid input MUST NEVER pass silently.
+
+---
+
+# 5. Edge Case Testing
+
+System MUST handle edge cases.
+
+---
+
+## Cases
 
 ### Merchant Suspended
-- loses access instantly
+
+→ loses access immediately
 
 ---
 
 ### Product Deactivated
-- removed from cart/checkout
+
+→ removed from cart / blocked at checkout
 
 ---
 
 ### Subscription Expired
-- merchant blocked
+
+→ merchant blocked
 
 ---
 
 ### Duplicate Requests
-- double submit order
+
+→ must NOT create duplicate orders
 
 ---
 
 ### Empty States
+
 - no products
 - no orders
+- no events
+
+---
+
+## Rule
+
+Edge cases MUST NOT break system behavior.
 
 ---
 
 # 6. Lifecycle Testing (MANDATORY)
 
-Test enforcement of:
+System MUST enforce:
 
 - merchant lifecycle
 - product lifecycle
 - subscription lifecycle
 
-Ensure:
-→ no bypass possible
+---
+
+## Rule
+
+No lifecycle bypass must be possible.
 
 ---
 
-# 7. Access Testing
+## Example
 
-Test:
+- inactive product MUST NOT be purchasable
+- suspended merchant MUST NOT access dashboard
+
+---
+
+# 7. Access & Authorization Testing
+
+System MUST test:
 
 - role-based access
-- ownership checks
+- ownership rules
 - admin-only actions
 
 ---
 
-# 8. Regression Testing
+## Examples
 
-After each task:
-
-- re-test auth
-- re-test merchant access
-- re-test checkout
-- re-test UI flows
+- user cannot access other user's data
+- merchant cannot access other merchant products
+- admin can access restricted areas
 
 ---
 
-# 9. UI Validation
+## Rule
 
-Check:
+Unauthorized access MUST return 403.
+
+---
+
+# 8. Data Integrity Testing
+
+System MUST validate:
+
+- totals recalculated server-side
+- foreign key consistency
+- atomic operations
+
+---
+
+## Example
+
+Order creation MUST:
+
+- create order
+- create order items
+- NOT allow partial state
+
+---
+
+## Rule
+
+No inconsistent data allowed.
+
+---
+
+# 9. Concurrency Testing
+
+System MUST handle:
+
+- duplicate submissions
+- race conditions
+- parallel requests
+
+---
+
+## Examples
+
+- double checkout click
+- simultaneous cart updates
+
+---
+
+## Rule
+
+System MUST remain consistent under concurrent usage.
+
+---
+
+# 10. Regression Testing
+
+After EACH completed task:
+
+System MUST re-test:
+
+- authentication
+- merchant access
+- product flows
+- checkout flow
+- UI consistency
+
+---
+
+## Rule
+
+No new feature must break existing functionality.
+
+---
+
+# 11. UI Validation
+
+System MUST validate:
 
 - Romanian text consistency
 - correct messages
 - correct redirects
 - no broken flows
+- consistent UI behavior
 
 ---
 
-# 10. Automation Strategy (Optional)
+## Rule
 
-Future:
+UI must match backend behavior.
 
-- CI tests
-- automated feature tests
-- seeders for fixtures
+---
+
+# 12. Automation Strategy (OPTIONAL BUT RECOMMENDED)
+
+Future improvements:
+
+- CI pipeline
+- automated test execution
+- database seeders for fixtures
+- snapshot testing for UI
+
+---
+
+## Rule
+
+Automation must not replace critical manual QA.
+
+---
+
+# 13. Test Data Isolation
+
+Tests MUST:
+
+- not depend on previous tests
+- not share mutable state
+- reset database between runs
+
+---
+
+## Rule
+
+Tests must be deterministic.
+
+---
+
+# 14. Completion Rule
+
+A feature is considered COMPLETE ONLY if:
+
+- unit tests pass
+- feature tests pass
+- manual QA is validated
+- edge cases are tested
+- lifecycle rules are enforced
 
 ---
 
 ## Final Rule
 
 If a feature is not tested:
-→ it is NOT considered complete
+
+→ it is NOT complete.
+
+If testing is superficial:
+
+→ system reliability is compromised.

@@ -10,10 +10,19 @@ Admin authentication remains isolated under `/admin/login`, and `/merchant/login
 ## Workflow artifacts produced
 - Planning: `tasks/planning/004-shared-user-merchant-login-role-routing.md`
 - Architecture: `tasks/architecture/004-shared-user-merchant-login-role-routing.md`
-- Final implementation task: `tasks/004-shared-user-merchant-login-role-routing.md`
 - Code review: `tasks/reviews/004-shared-user-merchant-login-role-routing.md` (passed, no must-fix)
 - Runtime test report: `tasks/tests/004-shared-user-merchant-login-role-routing.md` (passed)
 - Completion documentation: `tasks/done/004-shared-user-merchant-login-role-routing.md`
+
+## Final closure status
+- Task is completed and closed based on completed documentation and passing review/test artifacts.
+- Active task file removed from `tasks/004-shared-user-merchant-login-role-routing.md` as requested.
+- Workflow artifacts retained in place under:
+  - `tasks/planning/`
+  - `tasks/architecture/`
+  - `tasks/reviews/`
+  - `tasks/tests/`
+  - `tasks/done/`
 
 ## Main implementation scope included in release
 - Route behavior updates for shared login and merchant compatibility redirect:

@@ -25,7 +25,8 @@ The Floraffeine Boutique must be treated as a complete product from the beginnin
 - Implementation is incremental
 - Architecture must support all modules from the start
 
-Agents must NOT think in phases.
+Agents must NOT think in isolated feature fragments.
+Agents must think in complete product flow and long-term architecture.
 
 ---
 
@@ -77,6 +78,13 @@ Before implementing anything, ALWAYS read:
 - docs/DESIGN_CONTINUITY.md
 - docs/UI_COMPONENTS_REFERENCE.md
 - relevant task file from `/tasks`
+
+When relevant, also align with:
+- planner output
+- architecture output
+- review output
+- test output
+- visual audit output for UI tasks
 
 ---
 
@@ -203,7 +211,6 @@ NEVER assume shared functionality for:
 - public catalog
 
 If source documents imply shared behavior:
-
 → reinterpret as functionality to be implemented locally.
 
 ---
@@ -220,6 +227,89 @@ Rules:
 - do NOT reorder tasks
 - do NOT jump ahead to advanced features prematurely
 
+If the actual task history has diverged from the roadmap, the documentation and workflow must be normalized before continuing further major work.
+
+---
+
+## Official Agent Workflow Rule
+
+The official workflow is:
+
+1. planner -> `tasks/planning/`
+2. architect -> `tasks/architecture/`
+3. task-writer -> `tasks/`
+4. reviewer -> `tasks/reviews/`
+5. implementer -> code changes
+6. tester -> `tasks/tests/`
+7. visual-auditor -> `tasks/visual-reviews/` (UI tasks only)
+8. doc-writer -> `tasks/done/`
+9. release-manager -> `tasks/releases/`
+
+Rules:
+
+- reviewer reviews the written task and architecture BEFORE implementation
+- implementer executes only after reviewer validation
+- tester validates runtime behavior AFTER implementation
+- visual-auditor is required only for UI-related tasks
+- agents must follow this order and must not improvise a different sequence
+
+---
+
+## Workflow Persistence
+
+Agent outputs must be persisted to files for handoff:
+
+- planner -> tasks/planning/
+- architect -> tasks/architecture/
+- task-writer -> tasks/
+- reviewer -> tasks/reviews/
+- tester -> tasks/tests/
+- visual-auditor -> tasks/visual-reviews/ (UI only)
+- doc-writer -> tasks/done/
+- release-manager -> tasks/releases/
+
+Agents must not rely on chat memory for cross-step handoff.
+
+---
+
+## Task Closure Rule
+
+A task is considered active while it exists in:
+- `tasks/`
+
+A task is considered completed only when:
+- the final completion document exists in `tasks/done/`
+- all required workflow artifacts exist
+- for UI tasks: reviewer, tester, and visual-auditor have all passed
+- the original active task file is removed from `tasks/`
+
+A completed task must NOT remain duplicated in both:
+- `tasks/`
+- `tasks/done/`
+
+---
+
+## Release Closure Rule
+
+Release-manager is responsible for final release closure.
+
+Release closure includes:
+- validating that required workflow steps are complete
+- writing release output to `tasks/releases/`
+- removing the original active task file from `tasks/` once closure is complete
+- performing git closure when the task is fully approved
+
+Git closure includes:
+- pull latest changes safely
+- stage task-related changes
+- commit with a clean message
+- push the final result
+
+Release-manager must NOT perform git closure if:
+- required review/testing is incomplete
+- UI task has not passed visual-auditor
+- repository state is unsafe or conflicting
+
 ---
 
 ## Task Execution Rule
@@ -229,10 +319,12 @@ When implementing a feature:
 1. Understand the task completely
 2. Align with full product architecture
 3. Validate dependencies
-4. Implement cleanly
-5. Respect design continuity
-6. Ensure extensibility
-7. Review and test properly
+4. Review the task before implementation
+5. Implement cleanly
+6. Respect design continuity
+7. Ensure extensibility
+8. Test properly
+9. Close the task properly
 
 ---
 
@@ -247,6 +339,9 @@ The following are strictly forbidden:
 - introducing hidden dependencies
 - assuming missing features are “out of scope”
 - implementing shortcuts that require later rewrites
+- changing workflow order without explicit normalization
+- treating reviewer as a post-implementation QA role
+- treating tester as an architecture reviewer
 
 ---
 
@@ -259,7 +354,6 @@ All outputs must:
 - respect business flow
 - respect design rules
 - avoid partial implementations
-
 
 ---
 
@@ -276,10 +370,11 @@ If something is unclear:
 ---
 
 ## Design Source of Truth
+
 For any UI-related task, the design source-of-truth is mandatory and must be treated as authoritative.
 
 If a design source-of-truth exists in:
-docs/design-source-of-truth/
+`docs/design-source-of-truth/`
 
 agents must:
 - extract and use the exact visual tokens from the source
@@ -288,32 +383,30 @@ agents must:
 
 "Close enough" is not acceptable for UI tasks.
 
+---
+
 ## UI Quality Enforcement
+
 For UI tasks:
+
 - visual fidelity is required, not just structural consistency
 - exact color palette must come from the design source-of-truth when available
 - proportions (logo, cards, inputs, buttons, spacing) must be explicitly defined
 - no one-off inline styles are allowed in Blade views
 - reusable Blade components are required for repeated UI patterns
 
-## Workflow Persistence
-Agent outputs must be persisted to files for handoff:
-- planner -> tasks/planning/
-- architect -> tasks/architecture/
-- task-writer -> tasks/
-- reviewer -> tasks/reviews/
-- tester -> tasks/tests/
-- doc-writer -> tasks/done/
-- release-manager -> tasks/releases/
-
-Agents must not rely on chat memory for cross-step handoff.
+---
 
 ## Fail Condition For UI Tasks
+
 A UI task must be considered failed if:
+
 - it does not visually align with the source-of-truth
 - color palette is approximated instead of extracted
 - spacing/proportions are visibly unbalanced
 - review/testing only validates structure but not rendered visual quality
+
+---
 
 ## Browser-Verified UI Rule
 
@@ -330,6 +423,8 @@ A UI task must fail if:
 - CSS depends on a build artifact that is missing and no fallback exists
 - screenshots show broken proportions, overflow, missing layout, or missing branding
 
+---
+
 ## Visual Completion Rule
 
 A UI task is not considered complete until:
@@ -340,3 +435,15 @@ A UI task is not considered complete until:
 All three are required.
 
 If visual-auditor fails, the task must be reworked even if reviewer/tester passed.
+
+---
+
+## Stability-Safe Validation Rule
+
+Agents must prefer stable, lightweight validation over aggressive automation.
+
+Rules:
+
+- do not use heavy or hanging validation when smaller isolated checks are sufficient
+- do not destabilize the environment in the name of completeness
+- when environment limitations exist, report them clearly instead of forcing unsafe execution
