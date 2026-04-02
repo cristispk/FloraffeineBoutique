@@ -2,9 +2,11 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\MerchantStatus;
+use App\Models\Merchant;
 use App\Models\User;
 use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
@@ -20,7 +22,19 @@ class AuthService
 
     public function registerMerchant(array $data): User
     {
-        return $this->createUser($data, User::ROLE_MERCHANT);
+        return DB::transaction(function () use ($data) {
+            $user = $this->createUser($data, User::ROLE_MERCHANT);
+
+            $businessName = ($data['name'] ?? '') !== '' ? $data['name'] : '—';
+
+            Merchant::create([
+                'user_id' => $user->id,
+                'status' => MerchantStatus::Draft,
+                'business_name' => $businessName,
+            ]);
+
+            return $user;
+        });
     }
 
     /**

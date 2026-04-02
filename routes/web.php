@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MerchantController as AdminMerchantController;
 use App\Http\Controllers\Merchant\Auth\ForgotPasswordController as MerchantForgotPasswordController;
 use App\Http\Controllers\Merchant\Auth\LoginController as MerchantLoginController;
 use App\Http\Controllers\Merchant\Auth\RegisterController as MerchantRegisterController;
+use App\Http\Controllers\Merchant\ActivationController as MerchantActivationController;
 use App\Http\Controllers\Merchant\Auth\ResetPasswordController as MerchantResetPasswordController;
 use App\Http\Controllers\Merchant\DashboardController as MerchantDashboardController;
+use App\Http\Controllers\Merchant\OnboardingController as MerchantOnboardingController;
 use App\Http\Controllers\User\Auth\ForgotPasswordController as UserForgotPasswordController;
 use App\Http\Controllers\User\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\User\Auth\RegisterController as UserRegisterController;
@@ -62,9 +65,24 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/logout', [MerchantLoginController::class, 'logout'])->name('logout');
 
-        Route::get('/dashboard', [MerchantDashboardController::class, 'index'])
-            ->name('dashboard')
-            ->middleware('role:merchant');
+        Route::middleware('role:merchant')->group(function () {
+            Route::get('/onboarding', [MerchantOnboardingController::class, 'edit'])
+                ->name('onboarding')
+                ->middleware('merchant.status:draft');
+            Route::post('/onboarding', [MerchantOnboardingController::class, 'update'])
+                ->name('onboarding.store')
+                ->middleware('merchant.status:draft');
+
+            Route::get('/activation', [MerchantActivationController::class, 'show'])
+                ->name('activation')
+                ->middleware('merchant.status:accepted_pending_subscription');
+            Route::post('/activation/confirm', [MerchantActivationController::class, 'confirm'])
+                ->name('activation.confirm')
+                ->middleware('merchant.status:accepted_pending_subscription');
+
+            Route::get('/dashboard', [MerchantDashboardController::class, 'index'])
+                ->name('dashboard');
+        });
     });
 });
 
@@ -83,6 +101,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])
             ->name('dashboard')
             ->middleware('role:admin');
+
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/merchants', [AdminMerchantController::class, 'index'])->name('merchants.index');
+            Route::get('/merchants/{merchant}', [AdminMerchantController::class, 'show'])->name('merchants.show');
+            Route::post('/merchants/{merchant}/approve', [AdminMerchantController::class, 'approve'])->name('merchants.approve');
+            Route::post('/merchants/{merchant}/reject', [AdminMerchantController::class, 'reject'])->name('merchants.reject');
+            Route::post('/merchants/{merchant}/suspend', [AdminMerchantController::class, 'suspend'])->name('merchants.suspend');
+            Route::post('/merchants/{merchant}/reactivate', [AdminMerchantController::class, 'reactivate'])->name('merchants.reactivate');
+        });
     });
 });
 
