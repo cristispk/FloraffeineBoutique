@@ -32,9 +32,13 @@ Security MUST be enforced across:
 - Form Requests → input validation
 - Services → business validation
 - Middleware → access control
-- Models → structure only (NO business logic)
+- Policies → authorization logic
+
+Models MUST contain structure only (NO business logic).
 
 Controllers MUST remain thin.
+
+Services MUST be the final enforcement layer for critical operations.
 
 ---
 
@@ -59,6 +63,15 @@ Must include:
 - enum validation (status values)
 - existence checks (exists in DB)
 - relationship validation (product belongs to merchant)
+- strict type validation (no implicit casting)
+
+---
+
+## Critical Rule
+
+Unknown or unexpected fields MUST be rejected.
+
+Never allow silent acceptance of extra data.
 
 ---
 
@@ -75,7 +88,7 @@ Must include:
 System MUST:
 
 - use Laravel authentication system
-- hash all passwords
+- hash all passwords (bcrypt/argon)
 - enforce CSRF protection
 - protect all sensitive routes with `auth`
 
@@ -83,7 +96,8 @@ System MUST:
 
 ## Session Rules
 
-- sessions must be secure
+- sessions must be secure (httpOnly, secure cookies)
+- session regeneration after login
 - logout must invalidate session
 - no sensitive data stored in session
 
@@ -140,7 +154,7 @@ Authorization MUST be enforced via:
 
 - policies
 - middleware
-- service checks
+- service-level checks
 
 Never only in UI.
 
@@ -156,7 +170,7 @@ Users MUST access ONLY their own data.
 
 - always validate ownership via user_id
 - never trust route parameters alone
-- never expose foreign resources
+- validate ownership in service layer
 
 ---
 
@@ -215,6 +229,8 @@ System MUST enforce lifecycle rules strictly.
 
 ## Rule
 
+Lifecycle MUST be validated again in services (not only middleware).
+
 If lifecycle rules are bypassed:
 
 → system integrity is broken
@@ -239,6 +255,12 @@ DB::transaction(function () {
     // critical operations
 });
 ~~~
+
+---
+
+## Additional Rule
+
+All multi-step operations MUST be atomic.
 
 ---
 
@@ -291,8 +313,8 @@ System MUST prevent:
 
 ## Methods
 
-- idempotency tokens
-- unique constraints
+- idempotency tokens (recommended for payments)
+- unique constraints (DB-level)
 - server-side duplicate checks
 
 ---
@@ -313,7 +335,7 @@ Admin actions MUST be controlled.
 
 - sensitive operations must be validated
 - dangerous actions must be explicit
-- optional audit logging recommended
+- audit logging is strongly recommended
 
 ---
 
@@ -389,6 +411,12 @@ System MUST:
 - authenticate properly (token/session)
 - enforce rate limiting (recommended)
 - validate payload structure strictly
+
+---
+
+## Additional Rule
+
+API responses MUST be consistent and predictable.
 
 ---
 

@@ -6,6 +6,23 @@ This document defines the database architecture for the Boutique platform.
 
 The database must support the FULL product from the beginning, even if implementation is incremental.
 
+⚠️ Database structure is the foundation of the system.
+Wrong schema = broken system.
+
+---
+
+## Relationship with System
+
+Database must reflect:
+
+- /docs/02-boutique-business-flow.md (business logic)
+- /docs/03-laravel-architecture.md (implementation)
+- lifecycle states and constraints
+
+If database allows invalid states:
+
+→ system integrity is broken
+
 ---
 
 ## Core Principles
@@ -26,6 +43,7 @@ All relationships MUST use foreign keys.
 
 - enforce referential integrity
 - define cascade rules explicitly
+- NEVER leave orphan records possible
 
 ---
 
@@ -36,6 +54,7 @@ Indexes MUST exist for:
 - all foreign keys
 - status fields
 - frequently queried columns
+- composite indexes for common filters (e.g. merchant_id + status)
 
 ---
 
@@ -51,6 +70,7 @@ Indexes MUST exist for:
 
 - use ENUM or strictly controlled values
 - NEVER allow free-text status fields
+- values MUST match business flow definitions
 
 ---
 
@@ -61,6 +81,13 @@ Use soft deletes for:
 - products
 - merchants
 - orders (if needed)
+
+---
+
+## Rules
+
+- soft-deleted data must NOT appear in queries
+- queries must explicitly filter active records
 
 ---
 
@@ -79,6 +106,7 @@ Tables SHOULD support:
 - use JSON only when necessary
 - structure must be documented
 - must NOT replace relational structure
+- must NOT store critical relational logic
 
 ---
 
@@ -113,6 +141,13 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- role must be controlled (no free values)
+- authentication must rely on this table only
+
+---
+
 # 4. Merchants & Onboarding
 
 ## merchant_profiles
@@ -127,6 +162,14 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- user_id must be unique (1:1 relation)
+- status must follow lifecycle defined in business flow
+- inactive merchants must NOT appear in public queries
+
+---
+
 ## merchant_onboarding_data
 
 - id
@@ -134,6 +177,14 @@ The system is divided into the following data domains:
 - step
 - data (JSON)
 - completed (boolean)
+
+---
+
+## Rules
+
+- onboarding must be sequential
+- steps must be validated server-side
+- JSON structure must be documented
 
 ---
 
@@ -148,6 +199,13 @@ The system is divided into the following data domains:
 - ends_at
 - created_at
 - updated_at
+
+---
+
+## Rules
+
+- only active_paid merchants can be fully active
+- subscription must align with merchant lifecycle
 
 ---
 
@@ -175,6 +233,14 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- products must belong to active merchants
+- only active products are visible
+- product status must align with approval flow
+
+---
+
 ## product_images
 
 - id
@@ -195,6 +261,13 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- product cannot be active without approval (if approval required)
+- approval history must be preserved
+
+---
+
 # 7. Cart & Checkout
 
 ## carts
@@ -211,6 +284,13 @@ The system is divided into the following data domains:
 - cart_id (FK)
 - product_id (FK)
 - quantity
+
+---
+
+## Rules
+
+- cart must not contain invalid or inactive products
+- cart must be revalidated before checkout
 
 ---
 
@@ -237,6 +317,14 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- order must belong to valid merchant context
+- product data should be snapshotted (price, name if needed)
+- order must not depend on mutable product state
+
+---
+
 # 9. Promotions
 
 ## promotions
@@ -254,6 +342,13 @@ The system is divided into the following data domains:
 - id
 - product_id (FK)
 - promotion_id (FK)
+
+---
+
+## Rules
+
+- promotions must be time-bound
+- expired promotions must not affect visibility
 
 ---
 
@@ -279,6 +374,13 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- only approved merchants can participate
+- events must respect lifecycle
+
+---
+
 # 11. Payouts
 
 ## payouts
@@ -291,6 +393,13 @@ The system is divided into the following data domains:
 
 ---
 
+## Rules
+
+- payouts must be traceable
+- status transitions must be controlled
+
+---
+
 # 12. System Settings
 
 ## system_settings
@@ -298,6 +407,13 @@ The system is divided into the following data domains:
 - id
 - key (unique)
 - value
+
+---
+
+## Rules
+
+- key must be unique
+- values must be validated before use
 
 ---
 
@@ -314,6 +430,45 @@ The system is divided into the following data domains:
 
 ---
 
+# 14. Data Integrity Rule (CRITICAL)
+
+Database MUST prevent:
+
+- orphan records
+- invalid lifecycle states
+- inconsistent relationships
+
+If DB allows invalid state:
+
+→ application logic will eventually fail
+
+---
+
+# 15. Query Safety Rule
+
+All queries MUST:
+
+- filter active merchants
+- filter active products
+- respect soft deletes
+- respect lifecycle states
+
+---
+
+## Example
+
+BAD:
+
+select * from products
+
+GOOD:
+
+select * from products
+where status = 'active'
+and deleted_at is null
+
+---
+
 # Final Rule
 
 Database must reflect business logic clearly.
@@ -322,4 +477,6 @@ If a concept exists in business:
 → it MUST exist in database structure.
 
 If database is wrong:
-→ the entire system will fail.
+→ the entire system will fail
+
+⚠️ Database mistakes are the most expensive to fix later

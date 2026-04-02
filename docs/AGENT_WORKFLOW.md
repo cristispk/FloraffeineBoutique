@@ -1,16 +1,31 @@
 # Agent Workflow — Floraffeine Boutique
 
+## Purpose
+
+Provides a concise overview of the agent execution flow and file outputs.
+
+⚠️ Full execution rules are defined in:
+
+/docs/agents/agent-config.md
+
+If any contradiction exists:
+
+→ agent-config.md is the source of truth
+
+---
+
 ## Standard Flow
 
 1. planner -> tasks/planning/
 2. architect -> tasks/architecture/
 3. task-writer -> tasks/
-4. reviewer -> tasks/reviews/
+4. reviewer (PRE) -> tasks/reviews/
 5. implementer -> code changes
-6. tester -> tasks/tests/
-7. visual-auditor -> tasks/visual-reviews/ (UI tasks only)
-8. doc-writer -> tasks/done/
-9. release-manager -> tasks/releases/
+6. reviewer (POST) -> tasks/reviews/
+7. tester -> tasks/tests/
+8. visual-auditor -> tasks/visual-reviews/ (UI tasks only)
+9. doc-writer -> tasks/done/
+10. release-manager -> tasks/releases/
 
 ---
 
@@ -20,13 +35,19 @@
 - defines task scope and intent
 - structures work into actionable planning documents
 
+---
+
 ### architect
 - defines technical architecture and constraints
 - ensures alignment with system design and future scalability
 
+---
+
 ### task-writer
 - writes the final executable task
 - must be complete, unambiguous, and implementation-ready
+
+---
 
 ### reviewer (PRE-IMPLEMENTATION)
 - reviews task and architecture BEFORE implementation
@@ -36,10 +57,24 @@
   - architectural alignment
 - must NOT act as tester or implementer
 
+---
+
+### reviewer (POST-IMPLEMENTATION)
+- validates code after implementation
+- ensures:
+  - architecture is respected
+  - code quality is acceptable
+  - no regressions introduced
+- may apply small scoped fixes if safe
+
+---
+
 ### implementer
 - executes the task exactly as defined
 - must respect architecture and project rules
 - must NOT redesign or reinterpret scope
+
+---
 
 ### tester (POST-IMPLEMENTATION)
 - validates runtime behavior and flow
@@ -50,10 +85,14 @@
   - role and lifecycle constraints
 - must NOT review architecture
 
+---
+
 ### visual-auditor (UI TASKS ONLY)
 - validates visual fidelity and design consistency
 - must follow design source-of-truth strictly
 - required only for UI-related tasks
+
+---
 
 ### doc-writer
 - creates final completion documentation in `tasks/done/`
@@ -63,10 +102,12 @@
   - changes
 - must NOT modify implementation or architecture
 
+---
+
 ### release-manager
 - performs final task closure
 - validates that:
-  - reviewer passed
+  - reviewer passed (pre + post)
   - tester passed
   - visual-auditor passed (for UI tasks)
 - writes release output in `tasks/releases/`
@@ -98,12 +139,14 @@ No handoff may rely only on chat output.
 
 - Agents MUST follow the defined order strictly
 - reviewer MUST run before implementer
+- reviewer MUST run after implementer (POST validation)
 - tester MUST run after implementer
 - visual-auditor is mandatory only for UI tasks
 - doc-writer runs only after validation is complete
 - release-manager performs final closure
 
 Agents must NOT:
+
 - skip steps
 - reorder flow
 - assume previous steps are complete without file evidence
@@ -120,6 +163,7 @@ A task is considered CLOSED only when:
 - the original task file is removed from `tasks/`
 
 A task must NOT exist in both:
+
 - `tasks/`
 - `tasks/done/`
 
@@ -130,12 +174,14 @@ A task must NOT exist in both:
 Release-manager is responsible for git closure.
 
 Steps:
+
 - pull latest changes safely
 - stage relevant changes
 - commit with clear message
 - push
 
 Must NOT proceed if:
+
 - validation steps are incomplete
 - repository state is unsafe
 - conflicts are present

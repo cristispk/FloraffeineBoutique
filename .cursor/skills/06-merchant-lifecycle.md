@@ -16,6 +16,23 @@ This lifecycle is mandatory and must be enforced at all levels:
 - backend (services, policies)
 - middleware
 - UI
+- database constraints
+
+⚠️ Lifecycle is a CORE SYSTEM COMPONENT
+
+---
+
+## Relationship with System
+
+Lifecycle must be consistent with:
+
+- /docs/02-boutique-business-flow.md
+- /docs/04-routing-and-access.md
+- /docs/05-database-modeling.md
+
+If any layer allows lifecycle bypass:
+
+→ system is broken
 
 ---
 
@@ -89,6 +106,7 @@ Allowed transitions:
 - ALL transitions MUST be validated
 - transitions MUST be executed only via Services
 - direct status updates in database are FORBIDDEN
+- transitions must be atomic (no partial updates)
 
 ---
 
@@ -96,6 +114,7 @@ Allowed transitions:
 
 - lifecycle states must be defined as constants or enums
 - no hardcoded strings across codebase
+- values must match database ENUM values
 
 ---
 
@@ -163,6 +182,19 @@ Each state defines strict access rules.
 
 ---
 
+## Critical Rule
+
+Access must be enforced:
+
+- via middleware
+- via policies
+- via query filtering
+- via services
+
+NOT just UI
+
+---
+
 # 4. Login Redirect Rules
 
 After login:
@@ -176,12 +208,20 @@ After login:
 
 ---
 
+## Rules
+
+- redirect must be enforced server-side
+- frontend must NOT decide redirect logic
+
+---
+
 # 5. Middleware Enforcement
 
 Middleware MUST:
 
 - check lifecycle state
 - block unauthorized access
+- redirect correctly
 - never modify state
 
 ---
@@ -195,6 +235,12 @@ Middleware ≠ Business Logic
 
 ---
 
+## Critical Rule
+
+Lifecycle must be validated on EVERY request
+
+---
+
 # 6. Service Enforcement (CRITICAL)
 
 Services MUST:
@@ -202,6 +248,7 @@ Services MUST:
 - validate all lifecycle transitions
 - enforce allowed transitions only
 - prevent invalid state changes
+- ensure data consistency
 
 ---
 
@@ -210,6 +257,7 @@ Services MUST:
 - updating status directly in controller
 - updating status via model
 - bypassing lifecycle rules
+- multiple services updating lifecycle inconsistently
 
 ---
 
@@ -218,6 +266,7 @@ Services MUST:
 - UI must always reflect current state
 - no hidden states
 - clear next action (CTA)
+- UI must NOT allow invalid actions
 
 ---
 
@@ -247,6 +296,7 @@ Any mismatch is a critical bug.
 ### Incomplete Onboarding Return
 
 - must resume from last step
+- must NOT restart onboarding
 
 ---
 
@@ -254,12 +304,60 @@ Any mismatch is a critical bug.
 
 - active → suspended
 - restrict all features
+- must be enforced automatically (cron/job)
 
 ---
 
 ### Admin Rejection
 
 - merchant returns to restricted state
+- must display rejection reason
+
+---
+
+### Manual DB Change Risk (CRITICAL)
+
+If lifecycle is modified manually in database:
+
+→ system behavior becomes undefined
+
+All lifecycle updates must go through services
+
+---
+
+# 10. Query Enforcement Rule
+
+All queries involving merchants MUST:
+
+- filter only valid states when required
+- exclude inactive/suspended merchants where needed
+
+---
+
+## Example
+
+BAD:
+
+select * from merchant_profiles
+
+GOOD:
+
+select * from merchant_profiles
+where status = 'active'
+
+---
+
+# 11. Validation & Review Rule
+
+Lifecycle must be validated through:
+
+- reviewer (PRE → architecture)
+- reviewer (POST → enforcement)
+- tester (flow + access + edge cases)
+
+If lifecycle can be bypassed:
+
+→ task must be rejected
 
 ---
 
@@ -269,4 +367,6 @@ No feature access without correct lifecycle state.
 
 If lifecycle is bypassed:
 
-→ the system is broken.
+→ the system is broken
+
+⚠️ Lifecycle bugs = critical production issues

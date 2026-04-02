@@ -85,6 +85,8 @@ Allowed transitions:
 - ALL transitions MUST be validated
 - transitions MUST be executed ONLY via Services
 - direct status updates are FORBIDDEN
+- transitions MUST NOT be done in controllers or models
+- transitions MUST be atomic (no partial updates)
 
 ---
 
@@ -92,6 +94,7 @@ Allowed transitions:
 
 - statuses must be defined as constants or enums
 - no hardcoded strings allowed
+- database values must match application constants
 
 ---
 
@@ -110,6 +113,8 @@ A product is available ONLY if:
 
 Availability must be computed, NOT stored.
 
+Availability MUST always be determined at runtime using both product and merchant state.
+
 ---
 
 # 4. Dependency Rules
@@ -123,12 +128,35 @@ If merchant becomes:
 
 ---
 
+## Enforcement Rule
+
+This dependency MUST be enforced in:
+
+- queries
+- services
+- checkout validation
+
+NOT only in UI
+
+---
+
 # 5. Visibility Rules
 
 Product is visible ONLY when:
 
 - product.status = active
 - merchant.status = active
+
+---
+
+## Query Enforcement (CRITICAL)
+
+All queries that return public products MUST filter:
+
+- product.status = active
+- merchant.status = active
+
+Queries MUST NOT expose products of inactive or suspended merchants.
 
 ---
 
@@ -142,6 +170,14 @@ If an ACTIVE product is edited:
 
 ---
 
+## Additional Rule
+
+Edits MUST NOT update active products silently.
+
+Any change that affects product content MUST trigger re-approval.
+
+---
+
 # 7. Admin Control
 
 Admin can:
@@ -152,12 +188,40 @@ Admin can:
 
 ---
 
+## Rules
+
+- rejection SHOULD include reason
+- deactivation MUST remove product from visibility immediately
+
+---
+
 # 8. Checkout Eligibility
 
 Product can be purchased ONLY if:
 
 - product.status = active
 - merchant.status = active
+
+---
+
+## Validation Rule (CRITICAL)
+
+Validation MUST happen in backend at checkout time.
+
+Frontend validation is optional and only for UX.
+
+---
+
+## Runtime Protection
+
+At checkout:
+
+- product state MUST be revalidated
+- merchant state MUST be revalidated
+
+If invalid:
+
+→ checkout MUST be blocked
 
 ---
 
@@ -175,6 +239,15 @@ ONLY if:
 
 ---
 
+## Enforcement Rule
+
+Validation MUST happen:
+
+- when adding product to promotion/event
+- when rendering promotion/event
+
+---
+
 # 10. Order Integrity Rule
 
 Once a product is part of an order:
@@ -186,12 +259,19 @@ Once a product is part of an order:
 
 ---
 
+## Critical Rule
+
+Order data MUST NOT depend on current product table values.
+
+---
+
 # 11. Service Enforcement (CRITICAL)
 
 Services MUST:
 
 - validate all lifecycle transitions
 - enforce dependencies (merchant + product)
+- enforce checkout eligibility
 - prevent invalid state changes
 
 ---
@@ -234,6 +314,12 @@ Any mismatch is a critical bug.
 ### Product Deleted
 
 → must NOT affect existing orders
+
+---
+
+### Product Becomes Invalid After Added to Cart
+
+→ must be revalidated at checkout
 
 ---
 

@@ -37,6 +37,8 @@ UI layer MUST respect:
 
 Separation is mandatory.
 
+Blade MUST consume prepared data only.
+
 ---
 
 # 1. Blade Principles
@@ -86,6 +88,12 @@ System MUST use consistent layouts:
 
 ---
 
+## Additional Rule
+
+Layouts MUST define global structure (navigation, alerts, flash messages).
+
+---
+
 ## Forbidden
 
 - inline layout duplication
@@ -129,6 +137,12 @@ Components MUST:
 
 ---
 
+## Additional Rule
+
+Components MUST be deterministic (same input → same output).
+
+---
+
 # 4. Forms
 
 All forms MUST:
@@ -145,6 +159,12 @@ All forms MUST:
 - errors must appear near fields
 - errors must be readable
 - no technical messages
+
+---
+
+## Additional Rule
+
+Validation errors MUST use the same format across the system.
 
 ---
 
@@ -173,6 +193,12 @@ UI MUST be consistent across:
 No visual randomness.
 
 Every element must follow a defined pattern.
+
+---
+
+## Additional Rule
+
+Design system (tokens) SHOULD be centralized (CSS variables / Tailwind config).
 
 ---
 
@@ -218,6 +244,12 @@ NOT:
 
 ---
 
+## Additional Rule
+
+Copy MUST be consistent across all screens (same action → same wording).
+
+---
+
 # 7. Error Messages
 
 Error messages MUST be:
@@ -233,6 +265,12 @@ Error messages MUST be:
 - "Produsul nu mai este disponibil"
 - "Datele introduse nu sunt corecte"
 - "Comerciantul nu este activ"
+
+---
+
+## Additional Rule
+
+Errors MUST NOT blame the user.
 
 ---
 
@@ -259,6 +297,12 @@ Success messages MUST:
 - "Comanda a fost plasată cu succes"
 - "Datele au fost salvate"
 - "Produsul a fost creat"
+
+---
+
+## Additional Rule
+
+Success messages MUST appear consistently (toast / alert pattern).
 
 ---
 
@@ -292,6 +336,12 @@ Empty state MUST:
 
 ---
 
+## Additional Rule
+
+Empty states SHOULD include CTA (call-to-action).
+
+---
+
 # 10. Navigation & Actions
 
 Buttons and actions MUST be:
@@ -307,6 +357,12 @@ Buttons and actions MUST be:
 - primary action must be obvious
 - destructive actions must be clear
 - no ambiguous buttons
+
+---
+
+## Additional Rule
+
+Destructive actions MUST require confirmation.
 
 ---
 
@@ -343,6 +399,12 @@ User must ALWAYS understand:
 
 ---
 
+## Additional Rule
+
+Async actions MUST show loading indicators.
+
+---
+
 # 12. Blade Security
 
 ## Rules
@@ -367,6 +429,12 @@ UI MUST:
 - avoid unnecessary re-renders
 - avoid duplicated components
 - avoid heavy Blade logic
+
+---
+
+## Additional Rule
+
+Large datasets MUST be paginated.
 
 ---
 

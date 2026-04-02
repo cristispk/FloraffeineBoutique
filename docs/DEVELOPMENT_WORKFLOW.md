@@ -13,6 +13,19 @@ The goal is to ensure:
 
 ---
 
+## Related Core Documents
+
+This workflow MUST be executed together with:
+
+- Agent configuration: `/docs/agents/agent-config.md`
+- Documentation index: `/docs/INDEX.md`
+
+If any contradiction exists:
+
+→ `/docs/agents/agent-config.md` has higher priority
+
+---
+
 ## Core Principle
 
 The Boutique must be developed as a complete standalone product from the beginning.
@@ -67,6 +80,11 @@ All agents must:
 ---
 
 ## Team Roles (Normalized)
+
+⚠️ Full behavior and rules are defined in:
+`/docs/agents/agent-config.md`
+
+---
 
 ### Planner
 - selects next task from roadmap
@@ -177,6 +195,9 @@ Must NOT proceed if:
 
 ## Standard Task Flow (Corrected)
 
+⚠️ Official execution order is defined in:
+`/docs/agents/agent-config.md`
+
 Every task must follow this exact flow:
 
 1. Planner defines task
@@ -201,6 +222,7 @@ Before coding, always read:
 - docs/ROADMAP.md
 - docs/DESIGN_CONTINUITY.md
 - docs/UI_COMPONENTS_REFERENCE.md
+- `/docs/INDEX.md`
 
 ---
 
@@ -281,6 +303,8 @@ A task is complete only when:
 
 If something is unclear:
 
+- follow `/docs/agents/agent-config.md`
+- follow `/docs/INDEX.md`
 - follow source documents
 - follow project documentation
 - follow design reference

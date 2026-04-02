@@ -8,6 +8,22 @@ All implementation MUST follow this structure.
 
 This is NOT optional.
 
+⚠️ This document defines HOW the system is implemented.
+
+---
+
+## Relationship with System
+
+This document must be followed together with:
+
+- /docs/01-project-principles.md
+- /docs/02-boutique-business-flow.md
+- /docs/agents/agent-config.md
+
+If implementation respects architecture but violates business flow:
+
+→ implementation is WRONG
+
 ---
 
 ## Core Principle
@@ -16,7 +32,12 @@ Laravel must be used as a structured, service-oriented framework.
 
 NOT as a controller-heavy or model-heavy system.
 
-Architecture must enforce clarity, separation of concerns, and business flow integrity.
+Architecture must enforce:
+
+- clarity
+- separation of concerns
+- business flow integrity
+- predictability
 
 ---
 
@@ -44,6 +65,7 @@ Request → FormRequest → Controller → Service → Model → Response
 - Each layer has a single responsibility
 - No layer may take responsibilities from another
 - No shortcuts between layers
+- No direct skipping (e.g. Controller → Model with logic)
 
 ---
 
@@ -64,6 +86,7 @@ Controllers must:
 - NO data processing
 - NO direct DB queries (except trivial reads if justified)
 - NO validation logic
+- NO lifecycle decisions
 
 ---
 
@@ -108,6 +131,7 @@ All validation must be handled via Form Requests.
 - NEVER validate in controller
 - NEVER trust frontend validation
 - ALL input must be validated server-side
+- validation must reflect business constraints (not only syntax)
 
 ---
 
@@ -158,6 +182,20 @@ No service may allow bypassing these rules.
 
 ---
 
+## Critical Rule (VERY IMPORTANT)
+
+Services MUST be the ONLY place where:
+
+- state changes happen
+- lifecycle transitions occur
+- business rules are enforced
+
+If logic exists outside Services:
+
+→ architecture is broken
+
+---
+
 ## Example
 
 ~~~php
@@ -191,6 +229,7 @@ Actions are small, reusable units of logic.
 - actions must be small and focused
 - no orchestration logic (belongs to services)
 - reusable and testable
+- must NOT mutate global state unexpectedly
 
 ---
 
@@ -246,6 +285,7 @@ Query logic must NOT be placed in controllers.
 - keep queries reusable and readable
 - no raw queries in controllers
 - heavy queries must be extracted to dedicated query classes
+- query logic must respect business flow (e.g. active merchants only)
 
 ---
 
@@ -261,6 +301,7 @@ Services must be predictable.
 - throw exceptions for invalid states
 - do NOT return mixed or inconsistent structures
 - do NOT silently ignore errors
+- do NOT return arrays for complex domain logic (prefer DTO)
 
 ---
 
@@ -275,6 +316,7 @@ Business side-effects must be explicit.
 - no hidden logic in models
 - no silent state changes
 - no implicit lifecycle transitions
+- no logic in observers that changes critical business flow
 
 All important logic must be visible in Services.
 
@@ -294,10 +336,28 @@ All implementation must follow tasks.
 
 ---
 
+# 11. Validation & Review Enforcement
+
+Architecture must be validated through:
+
+- reviewer (PRE → structure correctness)
+- reviewer (POST → code quality & alignment)
+- tester (runtime behavior)
+
+If architecture is violated:
+
+→ task must be rejected or reworked
+
+---
+
 # Final Principle
 
 Clean architecture is NOT optional.
 
 Structure > Convenience  
 Clarity > Speed  
-Predictability > Flexibility
+Predictability > Flexibility  
+
+⚠️ If code works but violates architecture:
+
+→ it is WRONG

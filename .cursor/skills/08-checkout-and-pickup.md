@@ -89,6 +89,8 @@ Services MUST enforce:
 - pricing integrity
 - order creation integrity
 
+Services MUST be the single place where checkout rules are enforced.
+
 ---
 
 ## Checkout Flow (Step-by-Step)
@@ -149,10 +151,12 @@ System MUST validate server-side:
 - fulfillment type is valid
 - customer data is valid
 
+Validation MUST be done using fresh data from database.
+
 If validation fails:
 
-→ checkout must stop
-→ user must be redirected back with clear errors
+→ checkout must stop  
+→ user must be redirected back with clear errors  
 
 ---
 
@@ -202,8 +206,8 @@ Suggested fields:
 - customer_email
 - customer_phone
 - customer_notes (nullable)
-- payment_status (pending, paid, failed) — future-safe
-- external_payment_reference (nullable) — future-safe
+- payment_status (pending, paid, failed)
+- external_payment_reference (nullable)
 - created_at
 - updated_at
 
@@ -251,12 +255,13 @@ At checkout:
 
 - system recalculates total on backend
 - frontend values are never trusted
+- price MUST be taken from database at checkout time
 
 If mismatch exists:
 
 → backend values win
 
-Frontend price is informational only.
+Frontend price is informational only.  
 Backend price is authoritative.
 
 ---
@@ -286,6 +291,8 @@ Before order creation:
 - merchant must be active
 - product must remain checkout-eligible
 
+Validation MUST be done again at checkout time, not only when adding to cart.
+
 If NOT:
 
 → item must be removed from cart OR checkout must be blocked explicitly
@@ -308,7 +315,7 @@ Then:
 
 → all merchant products become unavailable for checkout immediately
 
-This must be enforced at checkout time, not only catalog time.
+This MUST be validated at checkout time.
 
 ---
 
@@ -322,8 +329,6 @@ System must recheck:
 
 - product state
 - merchant state
-- any fulfillment constraints in scope
-- any inventory / slot constraints if implemented later
 
 ---
 
@@ -338,7 +343,7 @@ Recommended protections:
 - server-side duplicate submission guard
 - transaction-safe flow
 
-Duplicate submission must NOT create multiple valid orders unintentionally.
+Duplicate submission must NOT create multiple valid orders.
 
 ---
 
@@ -353,8 +358,8 @@ Supported states:
 Rules:
 
 - order starts as pending
-- payment-related transitions must be explicit
-- future payment integrations must not break base order flow
+- status changes must be explicit
+- status transitions must NOT bypass services
 
 ---
 
@@ -373,7 +378,7 @@ Merchant cannot:
 - change price snapshots
 - rewrite already placed order data
 
-Order integrity is immutable after placement, except allowed status handling.
+Order integrity is immutable after placement.
 
 ---
 
@@ -388,7 +393,7 @@ If enabled:
 - customer_email required
 - customer_phone required
 
-Guest checkout must still follow all validation and integrity rules.
+Guest checkout must follow ALL validation rules.
 
 ---
 
@@ -401,7 +406,6 @@ System MUST:
 - protect checkout routes with correct CSRF handling
 - prevent manual order injection
 - avoid exposing internal order logic through client-controlled payload
-- enforce ownership where applicable after order creation
 
 Forbidden:
 
@@ -421,15 +425,7 @@ Checkout UX must be:
 - explicit on failure
 - explicit on success
 
-Examples:
-
-- "Produsul nu mai este disponibil"
-- "Comerciantul nu mai este activ"
-- "Coșul tău este gol"
-- "Comanda a fost plasată cu succes"
-
 No silent failures.
-No confusing redirects without explanation.
 
 ---
 
@@ -455,14 +451,14 @@ No confusing redirects without explanation.
 
 ### Duplicate Submission
 
-→ must be prevented via idempotency or equivalent protection
+→ must be prevented
 
 ---
 
 ### Price Changed After Cart Add
 
-→ checkout recalculates with backend price
-→ backend price is final
+→ checkout recalculates with backend price  
+→ backend price is final  
 
 ---
 
@@ -474,8 +470,8 @@ No confusing redirects without explanation.
 
 ### Guest Session Lost
 
-→ cart recovery behavior must be explicit
-→ no fake success flow
+→ cart recovery must be explicit  
+→ no fake success flow  
 
 ---
 

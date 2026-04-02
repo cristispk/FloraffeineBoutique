@@ -13,6 +13,18 @@ This document enforces:
 
 ---
 
+## Dependency on Agent System
+
+All task execution and closure MUST follow the agent flow defined in:
+
+/docs/agents/agent-config.md
+
+This document does NOT redefine agent responsibilities.
+
+It enforces closure rules within that system.
+
+---
+
 ## Core Principle
 
 No work exists outside a task.
@@ -48,23 +60,29 @@ All work MUST be based on task files.
 
 # 2. Task Lifecycle (STRICT FLOW)
 
-Each task MUST follow this exact order:
+⚠️ Official flow is defined in:
+`/docs/agents/agent-config.md`
 
-1. task-writer → creates task
-2. planner → structures implementation
-3. implementer → writes code
-4. reviewer → validates code quality
-5. tester → validates behavior
-6. doc-writer → updates documentation
-7. release-manager → closes task
+Each task MUST follow this execution order:
+
+1. planner → defines task direction
+2. architect → validates architecture
+3. task-writer → creates final task
+4. reviewer → validates task BEFORE implementation
+5. implementer → writes code
+6. reviewer → validates code AFTER implementation
+7. tester → validates behavior
+8. visual-auditor → validates UI (if applicable)
+9. doc-writer → documents completion
+10. release-manager → closes task
 
 ---
 
 ## Rule
 
-No step may be skipped.
-
-No role may self-approve without validation (except where explicitly defined).
+- No step may be skipped
+- No step may be reordered
+- No implicit approval is allowed
 
 ---
 
@@ -73,8 +91,10 @@ No role may self-approve without validation (except where explicitly defined).
 A task can be closed ONLY if ALL conditions are met:
 
 - implementation is complete
-- code review is approved
+- task review (pre-implementation) is approved
+- code review (post-implementation) is approved
 - tests pass (unit + feature + QA)
+- visual audit passes (for UI tasks)
 - documentation is updated
 - no critical issues remain
 - no broken flows exist
@@ -100,6 +120,12 @@ If ANY condition fails:
 ### Completed Tasks
 
 - stored in: `/tasks/done`
+
+---
+
+### Release Notes
+
+- stored in: `/tasks/releases`
 
 ---
 
@@ -132,7 +158,7 @@ Git actions MUST follow controlled flow.
 2. validate locally
 3. stage ONLY relevant files
 4. create clean commit
-5. push ONLY when approved
+5. push ONLY when approved by release-manager
 
 ---
 
@@ -190,8 +216,8 @@ Push is NOT automatic.
 
 ## Rules
 
-- push ONLY with explicit approval
-- push ONLY after validation
+- push ONLY after release-manager validation
+- push ONLY after all checks pass
 - push ONLY after clean commit
 
 ---
@@ -206,46 +232,9 @@ Push is NOT automatic.
 
 # 8. Agent Responsibility
 
-Each agent has STRICT responsibility.
+Agent responsibilities are defined in:
 
----
-
-## Implementer
-
-- writes code
-- follows architecture rules
-- respects scope
-
----
-
-## Reviewer
-
-- validates code quality
-- enforces architecture
-- rejects invalid implementations
-
----
-
-## Tester
-
-- validates flows
-- tests edge cases
-- ensures no regressions
-
----
-
-## Doc-Writer
-
-- updates documentation
-- ensures consistency with code
-
----
-
-## Release Manager
-
-- validates full completion
-- moves task to `/tasks/done`
-- confirms readiness for delivery
+`/docs/agents/agent-config.md`
 
 ---
 
@@ -300,7 +289,7 @@ If issues are found:
 
 - task remains open
 - issues are fixed
-- process restarts from relevant step
+- process returns to the appropriate step
 
 ---
 

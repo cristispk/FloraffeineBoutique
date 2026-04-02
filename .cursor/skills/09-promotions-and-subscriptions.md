@@ -43,6 +43,8 @@ Controllers MUST remain thin.
 
 Models MUST NOT contain business logic.
 
+Services MUST be the single source of truth for monetization rules.
+
 ---
 
 # 1. Creator Plan (Subscription)
@@ -155,7 +157,13 @@ System MUST enforce subscription status at:
 - product publishing
 - checkout eligibility
 
-Subscription validation must NOT be done only at UI level.
+Subscription validation MUST be done server-side, not only in UI.
+
+---
+
+## Critical Rule
+
+Subscription state MUST be validated on EVERY request that requires merchant capability.
 
 ---
 
@@ -237,6 +245,8 @@ At runtime, system MUST validate:
 - merchant is still active
 - subscription is still valid
 
+Validation MUST be done at query or service level.
+
 If validation fails:
 
 → promotion is ignored dynamically
@@ -269,6 +279,18 @@ Promotions MUST NEVER:
 - allow inactive products to appear
 
 Promotions are secondary to core eligibility rules.
+
+---
+
+## Critical Rule
+
+Promotions MUST NOT be the source of truth for visibility.
+
+Visibility MUST always depend on:
+
+- product lifecycle
+- merchant lifecycle
+- subscription validity
 
 ---
 
@@ -311,8 +333,8 @@ They may overlap but must NOT interfere with each other.
 
 ### Invalid Promotion Data
 
-→ promotion is ignored at runtime
-→ system must not crash
+→ promotion is ignored at runtime  
+→ system must not crash  
 
 ---
 
@@ -356,13 +378,20 @@ System must clearly communicate:
 - promotion status
 - access restrictions
 
-Examples:
-
-- "Abonamentul tău a expirat"
-- "Promovarea nu mai este activă"
-- "Acces restricționat din cauza plății eșuate"
-
 No silent failures.
+
+---
+
+## Synchronization Rule
+
+Subscription and promotion logic must be consistent across:
+
+- database
+- services
+- queries
+- UI
+
+Any mismatch is a critical bug.
 
 ---
 

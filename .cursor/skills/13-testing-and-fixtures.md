@@ -34,6 +34,7 @@ Testing MUST cover:
 - Services → business logic
 - Controllers → request handling
 - Middleware → access control
+- Policies → authorization rules
 - Database → integrity & constraints
 - UI → user experience consistency
 
@@ -60,6 +61,12 @@ Scope:
 
 ---
 
+## Additional Rule
+
+Unit tests MUST NOT hit database unless explicitly required.
+
+---
+
 ## Feature Tests
 
 Scope:
@@ -75,6 +82,12 @@ Scope:
 - test real HTTP flows
 - validate responses
 - validate database state
+
+---
+
+## Additional Rule
+
+Feature tests MUST simulate real user scenarios.
 
 ---
 
@@ -167,6 +180,12 @@ Fixtures MUST be:
 
 ---
 
+## Additional Rule
+
+Fixtures MUST be created via seeders or factories.
+
+---
+
 # 3. Happy Path Testing
 
 System MUST validate all core flows.
@@ -210,6 +229,12 @@ System MUST test invalid scenarios.
 - invalid IDs
 - unauthorized access
 - invalid lifecycle transitions
+
+---
+
+## Additional Rule
+
+Each endpoint MUST have at least one negative test.
 
 ---
 
@@ -259,6 +284,12 @@ System MUST handle edge cases.
 
 ---
 
+## Additional Rule
+
+Edge cases MUST be reproducible via fixtures.
+
+---
+
 ## Rule
 
 Edge cases MUST NOT break system behavior.
@@ -288,6 +319,15 @@ No lifecycle bypass must be possible.
 
 ---
 
+## Additional Rule
+
+Lifecycle MUST be tested at:
+
+- middleware level
+- service level
+
+---
+
 # 7. Access & Authorization Testing
 
 System MUST test:
@@ -312,6 +352,12 @@ Unauthorized access MUST return 403.
 
 ---
 
+## Additional Rule
+
+Authorization MUST be tested via policies and services.
+
+---
+
 # 8. Data Integrity Testing
 
 System MUST validate:
@@ -329,6 +375,12 @@ Order creation MUST:
 - create order
 - create order items
 - NOT allow partial state
+
+---
+
+## Additional Rule
+
+Transactions MUST be tested for rollback behavior.
 
 ---
 
@@ -352,6 +404,12 @@ System MUST handle:
 
 - double checkout click
 - simultaneous cart updates
+
+---
+
+## Additional Rule
+
+Concurrency SHOULD be simulated using parallel test execution.
 
 ---
 
@@ -381,6 +439,12 @@ No new feature must break existing functionality.
 
 ---
 
+## Additional Rule
+
+Regression tests MUST be automated where possible.
+
+---
+
 # 11. UI Validation
 
 System MUST validate:
@@ -399,11 +463,17 @@ UI must match backend behavior.
 
 ---
 
+## Additional Rule
+
+Critical flows MUST be manually verified in UI.
+
+---
+
 # 12. Automation Strategy (OPTIONAL BUT RECOMMENDED)
 
 Future improvements:
 
-- CI pipeline
+- CI pipeline (GitHub Actions / GitLab CI)
 - automated test execution
 - database seeders for fixtures
 - snapshot testing for UI

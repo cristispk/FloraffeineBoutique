@@ -46,6 +46,8 @@ Controllers MUST remain thin.
 
 Models MUST NOT contain business logic.
 
+Services MUST be the single source of truth for event and showcase logic.
+
 ---
 
 # 1. Events
@@ -135,6 +137,15 @@ If outside range:
 
 ---
 
+## Runtime Validation (CRITICAL)
+
+At render time, system MUST validate:
+
+- event is active
+- event is within time window
+
+---
+
 ## Event Participation
 
 Merchants may:
@@ -167,6 +178,8 @@ A product can be included ONLY if:
 - subscription is valid
 - product passes moderation (if enabled)
 
+Validation MUST be done server-side.
+
 ---
 
 ## Admin Controls
@@ -192,6 +205,18 @@ Events MUST NEVER:
 - override product lifecycle
 
 Events are secondary to core eligibility.
+
+---
+
+## Critical Rule
+
+Event listings MUST be filtered at query level using:
+
+- product.status
+- merchant.status
+- subscription.status
+
+NOT only at UI level.
 
 ---
 
@@ -244,6 +269,18 @@ If any condition fails:
 
 ---
 
+## Runtime Validation (CRITICAL)
+
+At render time, system MUST validate:
+
+- product status
+- merchant status
+- subscription status
+
+Invalid entries MUST be ignored dynamically.
+
+---
+
 ## Ordering Rules
 
 - lower position value = higher priority
@@ -267,53 +304,40 @@ They MUST NOT conflict.
 
 ---
 
-## Runtime Validation
-
-At render time, system MUST revalidate:
-
-- product status
-- merchant status
-- subscription status
-- event validity (if event-based listing)
-
-Invalid entries must be ignored dynamically.
-
----
-
 ## Edge Cases
 
 ### Merchant Suspended
 
-→ remove all event registrations
-→ remove all showcase entries
+→ remove all event registrations  
+→ remove all showcase entries  
 
 ---
 
 ### Subscription Expired
 
-→ remove from events
-→ remove from showcase
+→ remove from events  
+→ remove from showcase  
 
 ---
 
 ### Product Deactivated
 
-→ remove from events
-→ remove from showcase
+→ remove from events  
+→ remove from showcase  
 
 ---
 
 ### Event Expired
 
-→ event must be hidden completely
-→ associated listings must disappear
+→ event must be hidden completely  
+→ associated listings must disappear  
 
 ---
 
 ### Invalid Data
 
-→ system must ignore invalid records
-→ must NOT crash or expose broken state
+→ system must ignore invalid records  
+→ must NOT crash or expose broken state  
 
 ---
 
@@ -362,6 +386,8 @@ Showcase:
 - must feel curated
 - must feel premium
 - must not be cluttered
+
+No silent failures.
 
 ---
 

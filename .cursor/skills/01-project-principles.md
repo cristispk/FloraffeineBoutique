@@ -9,6 +9,24 @@ All agents, developers, and decisions must follow these principles.
 These are NOT optional guidelines.
 They are mandatory rules.
 
+⚠️ These principles override implementation decisions when conflicts occur.
+
+---
+
+## Relationship with Agent System
+
+This document defines WHAT must be respected.
+
+Execution flow is defined in:
+
+- /docs/agents/agent-config.md
+- /docs/agents/AGENT_WORKFLOW.md
+- /docs/DEVELOPMENT_WORKFLOW.md
+
+If any execution contradicts these principles:
+
+→ the execution is invalid, even if technically correct
+
 ---
 
 ## 1. Full Product Thinking
@@ -162,6 +180,7 @@ Boutique must visually and behaviorally align with the parent Floraffeine platfo
 
 - follow docs/DESIGN_CONTINUITY.md
 - follow docs/UI_COMPONENTS_REFERENCE.md
+- follow docs/design-fidelity.md
 - reuse patterns and components
 - do NOT create disconnected UI
 
@@ -178,12 +197,6 @@ All user-facing UI text must be in Romanian.
 - no English in UI
 - consistent terminology
 - clear and friendly wording
-
-Examples:
-
-- Login → Autentificare
-- Register → Creează cont
-- Dashboard → Panou de control
 
 Internal code remains in English.
 
@@ -218,8 +231,10 @@ A feature is either complete or not complete.
 - do NOT fake completeness
 
 A task is not complete until:
+
 - implementation is finished
-- required validation is passed
+- reviewer (PRE + POST) passed
+- tester passed
 - documentation reflects the real result
 - closure is performed correctly
 
@@ -250,7 +265,11 @@ All work must be based on tasks.
 - do NOT extend scope without validation
 - do NOT improvise outside task scope
 
-Task execution must follow the defined workflow and validation gates.
+Task execution must follow:
+
+- agent workflow
+- validation gates
+- task lifecycle
 
 ---
 
@@ -299,6 +318,7 @@ If a decision conflicts with:
 - business flow
 - standalone rule
 - validated task workflow
+- agent system
 
 → the implementation is WRONG
 

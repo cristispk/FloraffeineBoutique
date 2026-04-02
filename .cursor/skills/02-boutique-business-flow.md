@@ -14,6 +14,24 @@ It describes:
 This is NOT a generic e-commerce flow.
 This is a curated, controlled boutique experience.
 
+⚠️ This document is a SOURCE OF TRUTH for business behavior.
+
+---
+
+## Relationship with System
+
+This document defines WHAT the system must do.
+
+Execution must follow:
+
+- /docs/agents/agent-config.md
+- /docs/agents/AGENT_WORKFLOW.md
+- /docs/DEVELOPMENT_WORKFLOW.md
+
+If implementation contradicts this flow:
+
+→ implementation is invalid
+
 ---
 
 ## Core Concept
@@ -43,6 +61,7 @@ This business flow must be implemented strictly through task-driven execution.
 - do NOT improvise missing steps
 - every part of the flow must be:
   - implemented
+  - reviewed (PRE + POST)
   - tested
   - validated
   - aligned with documentation
@@ -153,6 +172,11 @@ No merchant can:
 
 UNLESS status = active
 
+⚠️ This must be enforced:
+- server-side (mandatory)
+- query-level filtering
+- middleware / policies
+
 ---
 
 # 3. Merchant Onboarding Flow
@@ -178,6 +202,7 @@ UNLESS status = active
 - incomplete onboarding cannot be submitted  
 - direct URL access to later steps must be blocked  
 - lifecycle transitions must be enforced server-side  
+- frontend must NOT be trusted for flow control  
 
 ---
 
@@ -206,7 +231,8 @@ Products are NOT immediately public.
 - incomplete products are not visible  
 - products must respect availability rules  
 - products must belong to active merchants  
-- visibility must be controlled at query level (no accidental exposure)  
+- visibility must be controlled at query level  
+- no accidental exposure via API or direct URL  
 
 ---
 
@@ -227,6 +253,7 @@ Users interact with:
 - no draft products  
 - no inactive merchant products  
 - no invalid state leakage to public UI  
+- filters and queries must enforce validity  
 
 ---
 
@@ -251,8 +278,9 @@ Users interact with:
 - no checkout without valid products  
 - no checkout with inactive merchant  
 - no checkout with unavailable items  
-- availability must be validated at checkout time (not only at listing time)  
+- availability must be validated at checkout time  
 - merchant status must be revalidated before order creation  
+- cart must be revalidated at submission time  
 
 ---
 
@@ -273,6 +301,7 @@ Users interact with:
 - merchant sees only their orders  
 - admin can see all orders  
 - invalid transitions must be blocked  
+- lifecycle transitions must be enforced server-side  
 
 ---
 
@@ -293,6 +322,7 @@ Availability depends on:
 - user cannot order unavailable products  
 - system must validate availability before checkout  
 - availability must be revalidated at order creation  
+- availability must NOT rely only on frontend logic  
 - no invalid orders allowed  
 
 ---
@@ -313,6 +343,7 @@ Admin responsibilities:
 - admin actions must be protected  
 - admin decisions affect lifecycle transitions  
 - admin actions must not bypass lifecycle integrity  
+- all critical admin actions should be auditable (logs recommended)  
 
 ---
 
@@ -346,6 +377,7 @@ If any part allows bypassing:
 
 This business flow must be validated through:
 
+- reviewer (PRE + POST)
 - tester (behavior + lifecycle + access)
 - visual-auditor (for UI-related flows)
 
@@ -354,6 +386,7 @@ A flow is NOT considered correct until:
 - behavior is validated
 - lifecycle restrictions are enforced
 - UI does not allow misleading or broken interaction
+- backend enforces all constraints independently
 
 ---
 
@@ -365,4 +398,8 @@ Not allow them to break it.
 
 Structure > Freedom  
 Control > Chaos  
-Experience > Speed
+Experience > Speed  
+
+⚠️ If the system allows invalid flow paths:
+
+→ implementation is WRONG

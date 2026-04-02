@@ -12,6 +12,22 @@ All routes MUST respect separation between:
 
 Routing is a critical security layer.
 
+⚠️ Incorrect routing = security vulnerability
+
+---
+
+## Relationship with System
+
+Routing must respect:
+
+- /docs/02-boutique-business-flow.md
+- merchant lifecycle rules
+- agent workflow validation
+
+If routing allows bypassing lifecycle or ownership:
+
+→ implementation is invalid
+
 ---
 
 # 1. Route Files Structure
@@ -21,6 +37,14 @@ Routes are split by area:
 - routes/public.php
 - routes/merchant.php
 - routes/admin.php
+
+---
+
+## Rules
+
+- do NOT mix areas
+- do NOT define merchant/admin routes in public.php
+- do NOT create generic routes bypassing separation
 
 ---
 
@@ -34,11 +58,19 @@ Each route file must be loaded with proper middleware:
 
 ---
 
+## Rules
+
+- middleware must be enforced globally per group
+- do NOT rely on controller-level checks instead of middleware
+
+---
+
 # 3. Route Definition Rules
 
 - routes must ONLY define endpoints
 - NO business logic in routes
 - NO inline closures with logic (except trivial)
+- NO direct DB queries
 
 All logic must flow:
 
@@ -89,6 +121,7 @@ Examples:
 - NO admin actions
 - read-only access only
 - apply rate limiting where needed
+- NEVER expose draft or inactive data
 
 ---
 
@@ -112,6 +145,8 @@ Accessible ONLY by authenticated merchants.
 - merchants can only access their own data
 - no cross-merchant access
 - onboarding must be enforced step-by-step
+- lifecycle must be enforced server-side (not only UI)
+- merchant must NEVER bypass onboarding via direct URL
 
 ---
 
@@ -133,6 +168,7 @@ Accessible ONLY by admins.
 - full access to system data
 - sensitive actions must be logged
 - destructive actions must be protected
+- critical actions should require confirmation (UI + backend)
 
 ---
 
@@ -147,6 +183,16 @@ Middleware must handle:
 
 ---
 
+## Critical Rule
+
+Middleware is NOT optional.
+
+If access is not enforced via middleware:
+
+→ system is insecure
+
+---
+
 # 9. Merchant Status Middleware
 
 Examples:
@@ -155,6 +201,14 @@ Examples:
 - merchant.onboarding → restrict to onboarding
 - merchant.pending_review → lock system
 - merchant.active → full access
+
+---
+
+## Rules
+
+- status must be validated on EVERY request
+- do NOT cache status in frontend
+- do NOT rely on session-only checks
 
 ---
 
@@ -175,11 +229,24 @@ Examples:
 
 ---
 
+## Example Risk
+
+If route allows:
+
+/merchant/products/123
+
+Then MUST validate:
+
+→ product.user_id === auth()->id()
+
+---
+
 # 11. Access Control Rules
 
 - users cannot access merchant routes
 - merchants cannot access admin routes
 - admin cannot use merchant routes as merchant
+- no role escalation allowed via URL or params
 
 ---
 
@@ -206,6 +273,7 @@ Use prefixes:
 - protect sensitive routes
 - never expose internal endpoints
 - validate all access via middleware
+- do NOT expose debug or internal routes in production
 
 ---
 
@@ -216,6 +284,25 @@ Use prefixes:
 - exposing sensitive endpoints
 - direct access to protected URLs
 - business logic in routes
+- relying only on frontend for access control
+
+---
+
+# 15. Validation & Review Rule
+
+Routing must be validated through:
+
+- reviewer (PRE → structure)
+- reviewer (POST → security & correctness)
+- tester (access control + role + lifecycle)
+
+If any route allows:
+
+- unauthorized access
+- lifecycle bypass
+- ownership violation
+
+→ task must be rejected
 
 ---
 
@@ -226,3 +313,5 @@ Routing defines system security.
 If routing is wrong:
 
 → the system is vulnerable
+
+⚠️ A working route that bypasses access control is a CRITICAL BUG
