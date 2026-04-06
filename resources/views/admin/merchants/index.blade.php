@@ -1,49 +1,60 @@
-@extends('layouts.auth')
+@extends('layouts.admin-shell')
 
-@section('title', 'Comercianți')
-@section('subtitle', 'Lista cererilor de verificare și a comercianților.')
+@section('meta_title', 'Comercianți')
+@section('page_title', 'Comercianți')
+@section('breadcrumbs')
+    <x-ui.breadcrumb :items="[['label' => 'Administrator', 'url' => route('admin.dashboard')]]" />
+@endsection
 
 @section('content')
-    <p>
-        <a href="{{ route('admin.merchants.index') }}">Doar în așteptare</a>
-        |
-        <a href="{{ route('admin.merchants.index', ['filter' => 'all']) }}">Toți comercianții</a>
-    </p>
+    <x-ui.filter-bar>
+        <div class="shell-filter-actions">
+            <a href="{{ route('admin.merchants.index') }}">Doar în așteptare</a>
+            <a href="{{ route('admin.merchants.index', ['filter' => 'all']) }}">Toți comercianții</a>
+        </div>
+    </x-ui.filter-bar>
 
     @if ($merchants->isEmpty())
-        <p>Nu există înregistrări de afișat.</p>
+        <x-ui.card>
+            <p>Nu există înregistrări de afișat.</p>
+        </x-ui.card>
     @else
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Brand</th>
-                        <th>Email</th>
-                        <th>Stare</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($merchants as $merchant)
+        <x-ui.table-wrapper>
+            <div class="table-responsive">
+                <table class="table shell-admin-table--stacked">
+                    <thead>
                         <tr>
-                            <td>{{ $merchant->id }}</td>
-                            <td>{{ $merchant->business_name }}</td>
-                            <td>{{ $merchant->user?->email }}</td>
-                            <td>{{ $merchant->status->value }}</td>
-                            <td>
-                                <a href="{{ route('admin.merchants.show', $merchant) }}">Detalii</a>
-                            </td>
+                            <th>ID</th>
+                            <th>Brand</th>
+                            <th>Email</th>
+                            <th>Stare</th>
+                            <th></th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        {{ $merchants->links() }}
+                    </thead>
+                    <tbody>
+                        @foreach ($merchants as $merchant)
+                            <tr>
+                                <td data-label="ID">
+                                    <span class="shell-admin-table__val">{{ $merchant->id }}</span>
+                                </td>
+                                <td data-label="Brand">
+                                    <span class="shell-admin-table__val">{{ $merchant->business_name }}</span>
+                                </td>
+                                <td data-label="Email">
+                                    <span class="shell-admin-table__val">{{ $merchant->user?->email }}</span>
+                                </td>
+                                <td data-label="Stare">
+                                    <span class="shell-admin-table__val">{{ $merchant->status->value }}</span>
+                                </td>
+                                <td data-label="Acțiune" class="shell-admin-table__action">
+                                    <a class="shell-link" href="{{ route('admin.merchants.show', $merchant) }}">Detalii</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            {{ $merchants->links() }}
+        </x-ui.table-wrapper>
     @endif
-
-    <p class="mt-3">
-        <a href="{{ route('admin.dashboard') }}">Înapoi la panou administrator</a>
-    </p>
 @endsection
