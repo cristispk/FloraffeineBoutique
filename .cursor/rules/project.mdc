@@ -77,6 +77,8 @@ Before implementing anything, ALWAYS read:
 - docs/DEVELOPMENT_WORKFLOW.md
 - docs/DESIGN_CONTINUITY.md
 - docs/UI_COMPONENTS_REFERENCE.md
+- docs/UI_VISUAL_STANDARDS.md
+- docs/UI_SHELL_BLUEPRINT.md
 - relevant task file from `/tasks`
 
 When relevant, also align with:
@@ -148,6 +150,8 @@ Agents must:
 
 - follow docs/DESIGN_CONTINUITY.md
 - follow docs/UI_COMPONENTS_REFERENCE.md
+- follow docs/UI_VISUAL_STANDARDS.md
+- follow docs/UI_SHELL_BLUEPRINT.md
 
 Rules:
 
@@ -155,6 +159,15 @@ Rules:
 - do NOT copy-paste raw HTML blindly
 - build clean Blade components
 - maintain consistent spacing, typography, and layout
+
+UI_SHELL_BLUEPRINT.md is mandatory for:
+
+- layout structure
+- grid alignment
+- spacing consistency
+- shell behavior (public / app / admin)
+
+Ignoring the blueprint is a FAIL condition for UI tasks.
 
 ---
 
@@ -231,19 +244,37 @@ If the actual task history has diverged from the roadmap, the documentation and 
 
 ---
 
+## Task Type Separation Rule
+
+Agents must clearly distinguish between different types of tasks.
+
+Types include:
+
+- UI foundation (shells, layout, navigation, spacing systems)
+- UX / copy / clarity (messages, flows, onboarding, labels)
+- business logic (rules, lifecycle, permissions)
+
+Rules:
+
+- do NOT mix these categories inside the same task
+- do NOT hide UX problems inside layout tasks
+- do NOT extend UI foundation tasks into product messaging decisions
+
+---
+
 ## Official Agent Workflow Rule
 
 The official workflow is:
 
-1. planner -> `tasks/planning/`
-2. architect -> `tasks/architecture/`
-3. task-writer -> `tasks/`
-4. reviewer -> `tasks/reviews/`
+1. planner -> tasks/planning/
+2. architect -> tasks/architecture/
+3. task-writer -> tasks/
+4. reviewer -> tasks/reviews/
 5. implementer -> code changes
-6. tester -> `tasks/tests/`
-7. visual-auditor -> `tasks/visual-reviews/` (UI tasks only)
-8. doc-writer -> `tasks/done/`
-9. release-manager -> `tasks/releases/`
+6. tester -> tasks/tests/
+7. visual-auditor -> tasks/visual-reviews/ (UI tasks only)
+8. doc-writer -> tasks/done/
+9. release-manager -> tasks/releases/
 
 Rules:
 
@@ -275,17 +306,17 @@ Agents must not rely on chat memory for cross-step handoff.
 ## Task Closure Rule
 
 A task is considered active while it exists in:
-- `tasks/`
+- tasks/
 
 A task is considered completed only when:
-- the final completion document exists in `tasks/done/`
+- the final completion document exists in tasks/done/
 - all required workflow artifacts exist
 - for UI tasks: reviewer, tester, and visual-auditor have all passed
-- the original active task file is removed from `tasks/`
+- the original active task file is removed from tasks/
 
 A completed task must NOT remain duplicated in both:
-- `tasks/`
-- `tasks/done/`
+- tasks/
+- tasks/done/
 
 ---
 
@@ -295,8 +326,8 @@ Release-manager is responsible for final release closure.
 
 Release closure includes:
 - validating that required workflow steps are complete
-- writing release output to `tasks/releases/`
-- removing the original active task file from `tasks/` once closure is complete
+- writing release output to tasks/releases/
+- removing the original active task file from tasks/ once closure is complete
 - performing git closure when the task is fully approved
 
 Git closure includes:
@@ -342,6 +373,7 @@ The following are strictly forbidden:
 - changing workflow order without explicit normalization
 - treating reviewer as a post-implementation QA role
 - treating tester as an architecture reviewer
+- allowing browser-default UI elements to remain in the interface
 
 ---
 
@@ -357,24 +389,12 @@ All outputs must:
 
 ---
 
-## Final Rule
-
-If something is unclear:
-
-- follow source documents
-- follow project documentation
-- follow design continuity
-- follow task order
-- do NOT improvise
-
----
-
 ## Design Source of Truth
 
 For any UI-related task, the design source-of-truth is mandatory and must be treated as authoritative.
 
 If a design source-of-truth exists in:
-`docs/design-source-of-truth/`
+docs/design-source-of-truth/
 
 agents must:
 - extract and use the exact visual tokens from the source
@@ -394,6 +414,23 @@ For UI tasks:
 - proportions (logo, cards, inputs, buttons, spacing) must be explicitly defined
 - no one-off inline styles are allowed in Blade views
 - reusable Blade components are required for repeated UI patterns
+- browser-default styling must not exist in final UI
+
+---
+
+## Premium UI Bar
+
+For UI tasks, "acceptable" is NOT sufficient.
+
+A UI is complete only if it is:
+
+- visually aligned
+- spacing-consistent
+- grid-consistent
+- clearly structured
+- free of default browser styling
+- coherent across public / merchant / admin
+- intentionally designed for mobile (not compressed desktop)
 
 ---
 
@@ -405,23 +442,30 @@ A UI task must be considered failed if:
 - color palette is approximated instead of extracted
 - spacing/proportions are visibly unbalanced
 - review/testing only validates structure but not rendered visual quality
+- browser-default styles are visible
+- layout is not aligned to the grid system
+- mobile layout is compressed instead of designed
 
 ---
 
 ## Browser-Verified UI Rule
 
-For every UI task, implementation is NOT complete until the agent verifies the rendered result in a browser-like environment.
+For every UI task, implementation is NOT complete until the agent verifies the rendered result.
 
 Mandatory checks:
+
 - CSS bundle is actually loaded on every page in scope
+- CSS served in browser matches the intended stylesheet
 - key layout selectors are present
 - screenshots are captured for all pages in scope
-- visible rendering matches the source-of-truth
+- rendering matches source-of-truth and premium expectations
 
 A UI task must fail if:
+
 - pages render unstyled or partially unstyled
-- CSS depends on a build artifact that is missing and no fallback exists
-- screenshots show broken proportions, overflow, missing layout, or missing branding
+- CSS depends on a missing build artifact
+- runtime CSS differs from expected CSS
+- screenshots show broken layout, overflow, or missing branding
 
 ---
 
@@ -447,3 +491,15 @@ Rules:
 - do not use heavy or hanging validation when smaller isolated checks are sufficient
 - do not destabilize the environment in the name of completeness
 - when environment limitations exist, report them clearly instead of forcing unsafe execution
+
+---
+
+## Final Rule
+
+If something is unclear:
+
+- follow source documents
+- follow project documentation
+- follow design continuity
+- follow task order
+- do NOT improvise
